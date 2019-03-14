@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "费用管理",
+  "navigationBarBackgroundColor": "#fcfcfc",
+  "usingComponents": {
+    "calendar": "plugin://calendar/calendar"
+  }
+}
