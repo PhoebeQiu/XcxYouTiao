@@ -1,7 +1,7 @@
 <template>
   <div class="contain">
     <div class="fee_title">
-      <FeeTitle @changeTypeStatus="changeTypeStatus" />
+      <FeeTitle :postStatus="typeStatus" @changeTypeStatus="changeTypeStatus" />
     </div>
 
     <div class="fee_money">
@@ -67,6 +67,7 @@ export default {
       // 时间选择限制时间
       endTime: '',
       // 组件
+      typeStatus: 0,
       feeStatus: 0,
       inFeeSort: [
         { num: 0,

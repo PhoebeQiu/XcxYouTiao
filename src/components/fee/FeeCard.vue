@@ -7,7 +7,7 @@
 
       <div v-if="feeItem[index]">
         <div v-for="(item2, index2) in feeItem[index]" :key="index2" >
-          <div class="fee_detail">
+          <div @click="toFeeInfo(item2.id)" class="fee_detail">
             <div class="line_small"></div>
             <div :class="['fee_img', item2.type === 0 ? 'fee_icon_red' : 'fee_icon_yellow']">
               <image v-if="item2.type === 0" class="fee_icon" :src="inFeeSort[item2.classification].fee_img" mode='aspectFill'/>
@@ -37,6 +37,10 @@
 </template>
 
 <script>
+import {
+  mapActions
+} from 'vuex'
+
 export default {
   props: {
     feeItem: {
@@ -129,6 +133,10 @@ export default {
   },
 
   methods: {
+    ...mapActions('feeInfo', [
+      'vuexSetFeeInfo'
+    ]),
+
     // 得到最近几天的时间列表
     getWeekTime () {
       const date = new Date()
@@ -138,6 +146,30 @@ export default {
         let temp = `${month}月${day}号`
         this.dayItem.push(temp)
       }
+    },
+
+    async toFeeInfo (id) {
+      const data = {
+        id: id
+      }
+      let res = await this.$api.expenses.getExpensesById(data)
+      if (res.error) {
+        return
+      }
+      console.log('费用详细信息', res.data)
+      const feeInfo = {
+        id: res.data.id,
+        budgetId: res.data.budgetId,
+        classification: res.data.classification,
+        description: res.data.description,
+        expenseDate: res.data.expenseDate,
+        expenses: res.data.expenses,
+        type: res.data.type
+      }
+      this.vuexSetFeeInfo(feeInfo)
+      wx.navigateTo({
+        url: `../feeInfo/main`
+      })
     }
 
   },

@@ -6,23 +6,25 @@
 
     <div v-if="feeItem" class="fee">
 
-      <div v-for="(item, index) in feeItem" :key="index" class="fee_detail">
-        <p class="fee_time">{{ item.expenseDate }}</p>
-        <div :class="['fee_img', item.type === 0 ? 'fee_icon_red' : 'fee_icon_yellow']">
-          <image v-if="item.type === 0" class="fee_icon" :src="inFeeSort[item.classification].fee_img" mode='aspectFill'/>
-          <image v-if="item.type === 1" class="fee_icon" :src="outFeeSort[item.classification].fee_img" mode='aspectFill'/>
+      <div v-for="(item, index) in feeItem" :key="index" >
+        <div @click="toFeeInfo(item.id)" class="fee_detail">
+          <p class="fee_time">{{ item.expenseDate }}</p>
+          <div :class="['fee_img', item.type === 0 ? 'fee_icon_red' : 'fee_icon_yellow']">
+            <image v-if="item.type === 0" class="fee_icon" :src="inFeeSort[item.classification].fee_img" mode='aspectFill'/>
+            <image v-if="item.type === 1" class="fee_icon" :src="outFeeSort[item.classification].fee_img" mode='aspectFill'/>
+          </div>
+          <div class="fee_word">
+            <span v-if="item.type === 0" class="fee_name">{{ inFeeSort[item.classification].title }}</span>
+            <span v-if="item.type === 1" class="fee_name">{{ outFeeSort[item.classification].title }}</span>
+            <p class="fee_desc">{{ item.description }}</p>
+          </div>
+          <p :class="['fee_money', item.type === 0 ? 'fee_money_red' : 'fee_money_yellow']">
+            <span v-if="item.type === 0">+</span>
+            <span v-if="item.type === 1">-</span>
+            {{ item.expenses }}
+          </p>
+          <div class="line"></div>
         </div>
-        <div class="fee_word">
-          <span v-if="item.type === 0" class="fee_name">{{ inFeeSort[item.classification].title }}</span>
-          <span v-if="item.type === 1" class="fee_name">{{ outFeeSort[item.classification].title }}</span>
-          <p class="fee_desc">{{ item.description }}</p>
-        </div>
-        <p :class="['fee_money', item.type === 0 ? 'fee_money_red' : 'fee_money_yellow']">
-          <span v-if="item.type === 0">+</span>
-          <span v-if="item.type === 1">-</span>
-          {{ item.expenses }}
-        </p>
-        <div class="line"></div>
       </div>
 
     </div>
@@ -31,6 +33,10 @@
 </template>
 
 <script>
+import {
+  mapActions
+} from 'vuex'
+
 export default {
   props: {
     feeItem: {
@@ -121,7 +127,36 @@ export default {
     }
   },
 
-  methods: {},
+  methods: {
+    ...mapActions('feeInfo', [
+      'vuexSetFeeInfo'
+    ]),
+
+    async toFeeInfo (id) {
+      console.log('费用id', id)
+      const data = {
+        id: id
+      }
+      let res = await this.$api.expenses.getExpensesById(data)
+      if (res.error) {
+        return
+      }
+      console.log('费用详细信息', res.data)
+      const feeInfo = {
+        id: res.data.id,
+        budgetId: res.data.budgetId,
+        classification: res.data.classification,
+        description: res.data.description,
+        expenseDate: res.data.expenseDate,
+        expenses: res.data.expenses,
+        type: res.data.type
+      }
+      this.vuexSetFeeInfo(feeInfo)
+      wx.navigateTo({
+        url: `../feeInfo/main`
+      })
+    }
+  },
 
   onLoad () {
     console.log('feeItem', this.feeItem)

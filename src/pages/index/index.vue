@@ -120,6 +120,7 @@ export default {
               description: item.description,
               time: item.time,
               type: item.type,
+              id: item.id,
               expenses: this.$wxApi.toMoney(item.expenses)
             }
           })

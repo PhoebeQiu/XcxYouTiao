@@ -13,6 +13,12 @@
 
 <script>
 export default {
+  props: {
+    postStatus: {
+      type: Number
+    }
+  },
+
   components: {
   },
 
@@ -38,6 +44,7 @@ export default {
 
   onLoad () {
     this.initstate()
+    this.status = this.postStatus
   }
 }
 </script>
