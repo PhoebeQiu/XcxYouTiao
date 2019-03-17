@@ -4,6 +4,7 @@
       <image @click="toAccount" class="header_account" src="../../static/images/ic_account.png" mode='aspectFill'/>
       <div @click="toBudget" class="header_text">
         <p>添加预算</p>
+        <p v-if="totalBudgetId !== null">{{ totalBudgetMoney }}</p>
       </div>
       <image @click="toShowDayFee" class="header_calendar" src="../../static/images/ic_calendar.png" mode='aspectFill'/>
     </div>
@@ -45,7 +46,10 @@ export default {
       feeItem: [],
       sumInExpenses: 0,
       sumOutExpenses: 0,
-      month: 0
+      month: 0,
+      // 预算
+      totalBudgetId: null,
+      totalBudgetMoney: 0
     }
   },
 
@@ -107,7 +111,21 @@ export default {
         return
       }
       console.log('近7天的费用列表', res.data)
-      this.feeItem = res.data
+      let feeData = res.data
+      for (let i = 0; i < feeData.length; i++) {
+        if (feeData[i].length !== 0) {
+          feeData[i] = feeData[i].map(item => {
+            return {
+              classification: item.classification,
+              description: item.description,
+              time: item.time,
+              type: item.type,
+              expenses: this.$wxApi.toMoney(item.expenses)
+            }
+          })
+        }
+      }
+      this.feeItem = feeData
     },
 
     async getFeeTotal () {
@@ -133,8 +151,22 @@ export default {
         return
       }
       console.log('该月份的的总费用', res.data)
-      this.sumInExpenses = res.data.sumInExpenses
-      this.sumOutExpenses = res.data.sumOutExpenses
+      this.sumInExpenses = this.$wxApi.toMoney(res.data.sumInExpenses)
+      this.sumOutExpenses = this.$wxApi.toMoney(res.data.sumOutExpenses)
+    },
+
+    async getAccountById () {
+      // 获取一周内的费用信息
+      const data = {
+        id: this.accountBook.id
+      }
+      let res = await this.$api.accountBook.getAccountById(data)
+      if (res.error) {
+        return
+      }
+      console.log('该账本详细信息', res.data)
+      this.totalBudgetId = res.data.totalBudgetId
+      this.totalBudgetMoney = res.data.totalBudgetMoney
     },
 
     async resetAccountOpenHistory (accountId) {
@@ -161,6 +193,8 @@ export default {
       this.getFeeTotal()
       // 请求：获取费用信息
       this.getFeeWeek()
+      // 请求：账本详细信息
+      this.getAccountById()
     }
   },
 

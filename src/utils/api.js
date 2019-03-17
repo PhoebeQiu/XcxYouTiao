@@ -34,6 +34,16 @@ export default {
     updateCustomer (data) {
       const params = {
         path: `/auth/updateCustomData`,
+        method: 'PUT',
+        data
+      }
+      return request(params)
+    },
+
+    // 更新用户资料
+    getCustomer (data) {
+      const params = {
+        path: `/auth/queryCustomDataById`,
         method: 'POST',
         data
       }
@@ -64,7 +74,7 @@ export default {
       return request(params)
     },
 
-    // 得到账本具体信息
+    // 通过ID得到账本具体信息
     getAccountById (data) {
       const params = {
         path: `/accountBook/getAccountBookById`,

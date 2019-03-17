@@ -5,7 +5,7 @@
       <div class="line"></div>
       <div class="fee_day">{{ item }}</div>
 
-      <div v-if="feeItem[index].length !== 0">
+      <div v-if="feeItem[index]">
         <div v-for="(item2, index2) in feeItem[index]" :key="index2" >
           <div class="fee_detail">
             <div class="line_small"></div>
@@ -26,7 +26,8 @@
           </div>
         </div>
       </div>
-      <div class="fee_no" v-if="feeItem[index].length === 0" >
+
+      <div class="fee_no" v-if="feeItem[index] == false" >
         <div class="line_small"></div>
         <p class="no_fee">该天没有费用～</p>
       </div>

@@ -13,6 +13,7 @@
     "pages/showDayFee/main",
     "pages/feeInfo/main",
     "pages/addBudget/main",
+    "pages/budgetInfo/main",
     "pages/budget/main"
   ],
   "window": {

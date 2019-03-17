@@ -13,7 +13,7 @@
 
       <textarea placeholder="备注(选填)"
       class="textarea"
-      v-model="desc"
+      v-model="signature"
       placeholder-style="color: #eee"/>
 
       <div @click="save">
@@ -25,6 +25,10 @@
 </template>
 
 <script>
+import {
+  mapActions,
+  mapGetters
+} from 'vuex'
 import WInput from '@/components/WInput'
 import WButton from '@/components/WButton'
 
@@ -34,7 +38,7 @@ export default {
       name: '',
       realNmae: '',
       phone: '',
-      desc: '',
+      signature: '',
       postItem: [
         {
           msg: '',
@@ -68,9 +72,24 @@ export default {
     WButton
   },
 
+  computed: {
+    ...mapGetters('user', [
+      'vuexGetUserInfo'
+    ]),
+
+    // 获取userInfo数据
+    userInfo () {
+      let userInfo = this.vuexGetUserInfo
+      return userInfo
+    }
+  },
+
   methods: {
+    ...mapActions('user', [
+      'vuexSetUserInfo'
+    ]),
+
     setInputValue (options) {
-      console.log('options', options)
       // 名称
       if (options.type === 'username') {
         this.name = options.msg
@@ -89,7 +108,7 @@ export default {
       this.name = ''
       this.realNmae = ''
       this.phone = ''
-      this.desc = ''
+      this.signature = ''
       this.postItem[0].msg = ''
       this.postItem[1].msg = ''
       this.postItem[2].msg = ''
@@ -106,15 +125,6 @@ export default {
       return validotr.check()
     },
 
-    async getUserInfo () {
-      // 请求：得到用户信息数据
-      // let res = await this.$api.user.()
-      // if (res.error) {
-      //   return
-      // }
-      // this.postItem[0].msg = res.nickname
-    },
-
     async save () {
       // 表单验证
       let validotrMsg = this.checked()
@@ -126,19 +136,29 @@ export default {
         name: this.name,
         realName: this.realName,
         phone: this.phone,
-        signature: this.desc
+        signature: this.signature
       }
       console.log('data', data)
-      // let res = await this.$api.auth.updateCustomData
+      let res = await this.$api.auth.updateCustomer(data)
+      console.log('更新用户信息', res)
       // if (res.error) {
       //   return
       // }
     }
   },
 
+  onShow () {
+  },
+
   onLoad () {
-    // 请求：用户数据，并设置
-    this.getUserInfo()
+    let tmpUser = this.userInfo
+    this.name = tmpUser.name
+    this.realNmae = tmpUser.realName
+    this.phone = tmpUser.phone
+    this.signature = tmpUser.signature
+    this.postItem[0].msg = tmpUser.name
+    this.postItem[1].msg = tmpUser.realName
+    this.postItem[2].msg = tmpUser.phone
   },
 
   onUnload () {

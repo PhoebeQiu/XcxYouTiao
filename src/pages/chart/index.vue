@@ -29,7 +29,8 @@
     </div>
 
     <div class="chart">
-      <div class="chartOption">
+      <p v-if="chartsData == false" class="no_chart">这段时间没有记录任何费用~</p>
+      <div v-if="chartsData != false" class="chartOption">
         <div class="chartOption_item" @click="changeInOutType(0)">
           <image class="chartOption_item_img" mode='aspectFill'
           :src="inOutType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
@@ -55,19 +56,19 @@
           </div>
         </div>
       </div>
-      <div class="echarts-wrap">
+      <div v-if="chartsData != false" class="echarts-wrap">
         <mpvue-echarts :echarts="echarts" :onInit="initChart"
           ref="echarts" disableTouch
           />
       </div>
     </div>
 
-    <div class="datail">
-      <div v-for="(item, index) in chartsData" :key="index" class="detail_item">
-        <image class="detail_item_ic" src="../../static/images/incomeType/in_income.png" mode="aspectFill" />
-        <p>{{ item.name }}</p>
-        <p class="detail_item_percent">88.7%</p>
-        <p>{{ item.value }}</p>
+    <div v-if="listData"  class="datail">
+      <div v-for="(item, index) in listData" :key="index" class="detail_item">
+        <image class="detail_item_ic" :src="item.img" mode="aspectFill" />
+        <p class="detail_item_name">{{ item.name }}</p>
+        <p class="detail_item_percent">{{ item.percent }}</p>
+        <p class="detail_item_value">{{ item.value }}</p>
         <image class="detail_item_arrow" src="../../static/images/ic_arrow.png" mode="aspectFill" />
         <div class="line"></div>
       </div>
@@ -185,6 +186,16 @@ export default {
           fee_img: '../../static/images/outcomeType/out_other.png'
         }
       ],
+      inOutFeeSort: [
+        {
+          title: '总支出',
+          fee_img: '../../static/images/outcomeType/out_total.png'
+        },
+        {
+          title: '总收入',
+          fee_img: '../../static/images/incomeType/in_total.png'
+        }
+      ],
       // 设置表格参数
       echarts,
       chartOption: null,
@@ -196,7 +207,12 @@ export default {
       chartsSurplusData: [],
       totalInExpenses: 0,
       totalOutExpenses: 0,
-      surplus: 0
+      surplus: 0,
+      // 列表显示数据
+      listData: [],
+      listAllData: [],
+      listInData: [],
+      listOutData: []
     }
   },
 
@@ -237,45 +253,79 @@ export default {
       let tmpInOutType = this.inOutType
       if (tmpInOutType === 0) {
         this.chartsData = this.chartsOutData
+        this.listData = this.listOutData
       } else if (tmpInOutType === 1) {
         this.chartsData = this.chartsInData
+        this.listData = this.listInData
       } else if (tmpInOutType === 2) {
         this.chartsData = this.chartsSurplusData
+        this.listData = this.listAllData
       }
       this.setChartOption()
     },
 
     // 设置数据，总支出/总收入/总结余
     setInOutType () {
-      // 封装表格要的三个数据数组
-      // 总支出
-      let outCome = this.chartsAllData.outExpensesList
-      let outData = []
-      for (let i = 0; i < outCome.length; i++) {
-        let tmpOutData = { value: outCome[i].total, name: this.outFeeSort[outCome[i].classification].title }
-        outData.push(tmpOutData)
-      }
-      this.chartsOutData = outData
-      console.log('this.chartsOutData', this.chartsOutData)
-      // 总收入
-      let inCome = this.chartsAllData.inExpensesList
-      let inData = []
-      for (let i = 0; i < inCome.length; i++) {
-        let tmpInData = { value: inCome[i].total, name: this.inFeeSort[inCome[i].classification].title }
-        inData.push(tmpInData)
-      }
-      this.chartsInData = inData
-      console.log('this.chartsInData', this.chartsInData)
-      // 总结余
+      // 封装表格和列表需要的三个数据数组
       this.totalInExpenses = this.chartsAllData.totalInExpenses
       this.totalOutExpenses = this.chartsAllData.totalOutExpenses
       this.surplus = this.chartsAllData.surplus
-      let inOutData = [
-        { value: this.totalInExpenses, name: '总收入' },
-        { value: this.totalOutExpenses, name: '总支出' }
-      ]
-      this.chartsSurplusData = inOutData
-      console.log('this.chartsSurplusData', this.chartsSurplusData)
+      // 总支出
+      let outCome = this.chartsAllData.outExpensesList
+      this.chartsOutData = outCome.map(item => {
+        return {
+          value: item.total,
+          name: this.outFeeSort[item.classification].title
+        }
+      })
+      this.listOutData = outCome.map(item => {
+        return {
+          value: this.$wxApi.toMoney(item.total),
+          percent: ((item.total / this.totalOutExpenses) * 100).toFixed(2) + '%',
+          name: this.outFeeSort[item.classification].title,
+          img: this.outFeeSort[item.classification].fee_img
+        }
+      })
+      // 总收入
+      let inCome = this.chartsAllData.inExpensesList
+      this.chartsInData = inCome.map(item => {
+        return {
+          value: item.total,
+          name: this.inFeeSort[item.classification].title
+        }
+      })
+      this.listInData = inCome.map(item => {
+        return {
+          value: this.$wxApi.toMoney(item.total),
+          percent: ((item.total / this.totalInExpenses) * 100).toFixed(2) + '%',
+          name: this.inFeeSort[item.classification].title,
+          img: this.inFeeSort[item.classification].fee_img
+        }
+      })
+      // 总结余
+      if (this.totalInExpenses !== 0 && this.totalOutExpenses !== 0) {
+        this.chartsSurplusData = [
+          { value: this.totalInExpenses, name: '总收入' },
+          { value: this.totalOutExpenses, name: '总支出' }
+        ]
+        this.listAllData = [
+          {
+            value: this.$wxApi.toMoney(this.totalInExpenses),
+            percent: ((this.totalInExpenses / (this.totalInExpenses + this.totalOutExpenses)) * 100).toFixed(2) + '%',
+            name: this.inOutFeeSort[0].title,
+            img: this.inOutFeeSort[0].fee_img
+          },
+          {
+            value: this.$wxApi.toMoney(this.totalOutExpenses),
+            percent: ((this.totalOutExpenses / (this.totalInExpenses + this.totalOutExpenses)) * 100).toFixed(2) + '%',
+            name: this.inOutFeeSort[1].title,
+            img: this.inOutFeeSort[1].fee_img
+          }
+        ]
+      } else {
+        this.chartsSurplusData = []
+        this.listAllData = []
+      }
     },
 
     // 修改表格显示的 总支出/总收入/总结余
@@ -283,10 +333,13 @@ export default {
       this.inOutType = num
       if (num === 0) {
         this.chartsData = this.chartsOutData
+        this.listData = this.listOutData
       } else if (num === 1) {
         this.chartsData = this.chartsInData
+        this.listData = this.listInData
       } else if (num === 2) {
         this.chartsData = this.chartsSurplusData
+        this.listData = this.listAllData
       }
       this.setChartOption()
     },
@@ -301,7 +354,7 @@ export default {
             radius: ['40%', '55%'],
             label: {
               normal: {
-                formatter: '{b}\n{d}%',
+                formatter: '{b} {d}%',
                 color: '#232323',
                 shadowBlur: 3,
                 shadowOffsetX: 2,
@@ -465,6 +518,11 @@ export default {
   border: 2rpx solid #eeeeee;
   margin: 10rpx 0;
 }
+.no_chart {
+  line-height: 600rpx;
+  font-size: 34rpx;
+  color: #b2b2b2;
+}
 .chartOption {
   width: 690rpx;
   height: 120rpx;
@@ -500,7 +558,7 @@ export default {
   color: #de6f6f;
 }
 .echarts-wrap {
-  width: 600rpx;
+  width: 690rpx;
   height: 460rpx;
 }
 
@@ -520,10 +578,21 @@ export default {
   font-size: 28rpx;
   letter-spacing: 0.2rpx;
 }
-.detail_item_percent {
+
+.detail_item_name {
+  width: 100rpx;
   flex: 1 0 auto;
-  text-align: center;
 }
+.detail_item_percent {
+  text-align: right;
+  width: 110rpx;
+  margin-right: 20rpx;
+}
+.detail_item_value {
+  width: 200rpx;
+  text-align: right
+}
+
 .detail_item_ic, .detail_item_arrow {
   width: 48rpx;
   height: 48rpx;

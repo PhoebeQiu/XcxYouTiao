@@ -59,11 +59,13 @@ export default {
 
     async getBudgetList () {
       const data = {
-        accountBookId: this.accountBook.id
+        accountBookId: this.accountBook.id,
+        pageNum: 1,
+        pageSize: 10
       }
       console.log('所有预算data', data)
-      // let res = await this.$api.budget.getAllBudgetList(data)
-      // console.log('所有预算res', res)
+      let res = await this.$api.budget.getAllBudgetList(data)
+      console.log('所有预算res', res)
     }
   },
 

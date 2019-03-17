@@ -4,7 +4,10 @@
     <div class="user">
       <image class="user_img" :src="userInfo.avatarUrl" mode="aspectFill" />
       <div class="user_detail">
-        <p class="user_name">{{ userInfo.wxName }}</p>
+        <p class="user_name">
+          <span v-if="userInfo.name">{{ userInfo.name }}</span>
+          <span v-if="userInfo.name == ''">{{ userInfo.wxName }}</span>
+        </p>
         <p class="user_desc">这个人没有留言哦</p>
       </div>
     </div>
@@ -32,7 +35,8 @@
 <script>
 import WTabBar from '@/components/TabBar'
 import {
-  mapGetters
+  mapGetters,
+  mapActions
 } from 'vuex'
 
 export default {
@@ -57,15 +61,37 @@ export default {
   },
 
   methods: {
+    ...mapActions('user', [
+      'vuexSetUserInfo'
+    ]),
+
     toUserInfo () {
       wx.navigateTo({
         url: `../userInfo/main`
       })
+    },
+
+    async getCustomer () {
+      let wxUserInfo = this.userInfo
+      // 请求：获取用户信息
+      const data = {}
+      const res = await this.$api.auth.getCustomer(data)
+      console.log('获取用户信息', res.data)
+      const userData = {
+        name: res.data.name,
+        realName: res.data.realName,
+        phone: res.data.phone,
+        signature: res.data.signature,
+        avatarUrl: wxUserInfo.avatarUrl,
+        wxName: wxUserInfo.wxName
+      }
+      this.vuexSetUserInfo(userData)
     }
   },
 
   onShow () {
     wx.hideTabBar()
+    this.getCustomer()
   }
 }
 </script>

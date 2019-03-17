@@ -11,7 +11,7 @@
        />
     </div>
 
-    <div class="total_fee">
+    <div v-if="listExpenses != false" class="total_fee">
       <div class="total_fee_word">
         <p>{{ date }} 账单</p>
         <p :class="sumExpenses > 0 ? 'total_fee_red' : 'total_fee_yellow'">
@@ -154,40 +154,28 @@ export default {
       if (res.error) {
         return
       }
+      let feeData = res.data.listExpenses
+      if (feeData.length !== 0) {
+        feeData = feeData.map(item => {
+          return {
+            accountBookId: item.accountBookId,
+            budgetId: item.budgetId,
+            classification: item.classification,
+            createTime: item.createTime,
+            description: item.description,
+            id: item.id,
+            lastModifyTime: item.lastModifyTime,
+            type: item.type,
+            expenseDate: this.$time.turnTime(item.expenseDate).slice(11, 16),
+            expenses: this.$wxApi.toMoney(item.expenses)
+          }
+        })
+      }
       console.log('所选日期的费用列表', res.data)
-      this.listExpenses = res.data.listExpenses
-      this.sumInExpenses = res.data.sumInExpenses
-      this.sumOutExpenses = res.data.sumOutExpenses
-      // 把费用列表的时间做处理
-      this.turnExpensesDate()
-      // 计算单天的总结余
-      this.getSumExpenses()
-    },
-
-    // 把费用列表的时间做处理
-    turnExpensesDate () {
-      let listExpenses = this.listExpenses
-      for (let i = 0; i < listExpenses.length; i++) {
-        let time = this.$time.turnTime(listExpenses[i].expenseDate)
-        this.listExpenses[i].expenseDate = time.slice(11, 16)
-      }
-    },
-
-    // 计算单天的总结余
-    getSumExpenses () {
-      // type expenses
-      // sumExpenses
-      let listExpenses = this.listExpenses
-      let inExpenses = 0
-      let outExpenses = 0
-      for (let i = 0; i < listExpenses.length; i++) {
-        if (listExpenses[i].type === 0) {
-          inExpenses = Math.floor(parseFloat(listExpenses[i].expenses * 100 + inExpenses)) / 100
-        } else if (listExpenses[i].type === 1) {
-          outExpenses = Math.floor(parseFloat(listExpenses[i].expenses * 100 + outExpenses)) / 100
-        }
-      }
-      this.sumExpenses = Math.floor(parseFloat(inExpenses * 100 + outExpenses * 100)) / 100
+      this.listExpenses = feeData
+      this.sumInExpenses = this.$wxApi.toMoney(res.data.sumInExpenses)
+      this.sumOutExpenses = this.$wxApi.toMoney(res.data.sumOutExpenses)
+      this.sumExpenses = Math.floor(parseFloat(res.data.sumInExpenses * 100 - res.data.sumOutExpenses * 100)) / 100
     }
   },
 

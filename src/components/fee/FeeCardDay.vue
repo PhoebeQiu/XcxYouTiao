@@ -1,6 +1,10 @@
 <template>
   <div class="contain">
-    <div class="fee">
+    <div v-if="feeItem == false" class="no_fee">
+      <p>这一天还没有记录过费用~</p>
+    </div>
+
+    <div v-if="feeItem" class="fee">
 
       <div v-for="(item, index) in feeItem" :key="index" class="fee_detail">
         <p class="fee_time">{{ item.expenseDate }}</p>
@@ -22,6 +26,7 @@
       </div>
 
     </div>
+
   </div>
 </template>
 
@@ -116,7 +121,11 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {},
+
+  onLoad () {
+    console.log('feeItem', this.feeItem)
+  }
 }
 </script>
 
@@ -127,6 +136,21 @@ export default {
   align-items: center;
   font-family: PingFangSC;
   color: #232323;
+}
+
+.no_fee {
+  border-top: 2rpx solid #eee;
+  border-radius: 6rpx;
+  font-size: 30rpx;
+  padding: 20rpx 30rpx;
+  background-color: white;
+  width: 690rpx;
+  height: 95rpx;
+  text-align: center;
+}
+.no_fee p {
+  line-height: 100rpx;
+  color: #b2b2b2;
 }
 
 .fee {

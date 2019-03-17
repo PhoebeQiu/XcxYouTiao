@@ -33,21 +33,6 @@ export default {
 
     async login () {
       let res = await this.$wxApi.getUserMsg()
-      // 有“获取个人资料”接口后：
-      // let _token = this.getToken()
-      // 本地有 token 请求个人资料接口
-      // if (token) {
-      //   let profile = await this.$api.my.profile()
-      //   if (profile.error) {
-      //     return
-      //   }
-      //   this.vuexSetUserInfo(profile)
-      // } else {
-      //   const data = {
-      //     nickname: res.userInfo.nickName
-      //   }
-      //   this.vuexSetUserInfo(data)
-      // }
       const data = {
         avatarUrl: res.userInfo.avatarUrl,
         wxName: res.userInfo.nickName
