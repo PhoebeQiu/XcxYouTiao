@@ -228,6 +228,36 @@ export default {
         data
       }
       return request(params)
+    },
+
+    // 通过id得到预算
+    getBudgetById (data) {
+      const params = {
+        path: `/budget/queryBudgetById`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 更新预算
+    updateBudget (data) {
+      const params = {
+        path: `/budget/updateBudget`,
+        method: 'PUT',
+        data
+      }
+      return request(params)
+    },
+
+    // 删除预算
+    daleteBudget (data) {
+      const params = {
+        path: `/budget/deleteBudgetById`,
+        method: 'DELETE',
+        data
+      }
+      return request(params)
     }
 
   }

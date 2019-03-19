@@ -60,6 +60,12 @@ export default {
     this.placeholderMsg = this.post.placeholderMsg ? this.post.placeholderMsg : ''
   },
 
+  onShow () {
+    if (this.post.msg) {
+      this.msg = this.post.msg
+    }
+  },
+
   onUnload () {
     this.msg = ''
     this.maxLength = 140

@@ -56,7 +56,6 @@ export default {
       budgetTipMoney: 0,
       budgetStartTime: '',
       budgetEndTime: '',
-      // 页面显示数据
       // 分类组件
       budgetStatus: 0,
       outBudgetSort: [
@@ -167,14 +166,14 @@ export default {
   },
 
   computed: {
-    ...mapGetters('accountBook', [
-      'vuexGetAccountBook'
+    ...mapGetters('budget', [
+      'vuexGetBudgetInfo'
     ]),
 
     // 获取数据
-    accountBook () {
-      let accountBook = this.vuexGetAccountBook
-      return accountBook
+    budgetInfo () {
+      let budgetInfo = this.vuexGetBudgetInfo
+      return budgetInfo
     }
   },
 
@@ -187,12 +186,18 @@ export default {
 
   methods: {
     initState () {
-      // this.feeDesc = ''
-      // this.feeType = ''
-      // this.feeMoney = ''
-      // this.budgetInput[0].msg = ''
-      // this.budgetInput[0].dotStatus = '1'
-      // this.budgetInput[0].placeholderMsg = '¥ 0.00'
+      this.budgetClassification = 0
+      this.budgetStatus = 0
+      this.budgetMoney = 0
+      this.budgetInput[0].msg = 0
+      this.budgetTipMoney = 0
+      this.budgetInput[1].msg = 0
+      this.budgetStartTime = ''
+      this.startTimeInput.time = ''
+      this.startTimeInput.date = ''
+      this.budgetEndTime = ''
+      this.endTimeInput.time = ''
+      this.endTimeInput.date = ''
     },
 
     changeClassificationStatus (options) {
@@ -235,56 +240,79 @@ export default {
       return validotr.check()
     },
 
-    // async addBudget () {
-    //   // 表单验证
-    //   let validotrMsg = this.checked()
-    //   if (validotrMsg) {
-    //     return
-    //   }
-    //   // 开始时间 < 结束时间
-    //   let startTime = this.budgetStartTime
-    //   let endTime = this.budgetEndTime
-    //   let aStartTime = startTime.slice(8, 10)
-    //   let aEndTime = endTime.slice(8, 10)
-    //   if (aStartTime > aEndTime) {
-    //     wx.showToast({
-    //       title: `开始时间不能大于结束时间`,
-    //       icon: 'none'
-    //     })
-    //     return
-    //   }
-    //   // 得到时分秒
-    //   const Second = new Date()
-    //   const SecondTime = this.$time.formatTime(Second)
-    //   const tmpStartTime = `${this.budgetStartTime} ${SecondTime}`
-    //   const tmpEndTime = `${this.budgetEndTime} ${SecondTime}`
-    //   // 时间转化为时间戳
-    //   let startDate = this.$time.turnTimeStamp(tmpStartTime)
-    //   let endDate = this.$time.turnTimeStamp(tmpEndTime)
-    //   // 校验：如果预算为总预算，判断数据库里是否已存在总预算//判断该总预算的金额是否有超过该月份的分类预算金额
-    //   // 。。。
-    //   // 校验：如果预算为分类预算，判断该分类预算的金额是否超过该月份的总预算金额
-    //   // 。。。
-    //   // 发起请求
-    //   const data = {
-    //     accountBookId: this.accountBook.id,
-    //     classification: this.budgetClassification,
-    //     type: this.budgetClassification,
-    //     budget: this.budgetMoney,
-    //     warmMoney: this.budgetTipMoney,
-    //     beginTime: startDate,
-    //     endTime: endDate
-    //   }
-    //   console.log('添加预算data', data)
-    //   let res = await this.$api.budget.addBudget(data)
-    //   console.log('添加预算res', res)
-    //   // if (res.error) {
-    //   //   return
-    //   // }
-    //   // wx.switchTab({
-    //   //   url: `../index/main`
-    //   // })
-    // },
+    async updateBudget () {
+      // 表单验证
+      let validotrMsg = this.checked()
+      if (validotrMsg) {
+        return
+      }
+      // 开始时间 < 结束时间
+      let startTime = this.budgetStartTime
+      let endTime = this.budgetEndTime
+      let aStartTime = startTime.slice(8, 10)
+      let aEndTime = endTime.slice(8, 10)
+      if (aStartTime > aEndTime) {
+        wx.showToast({
+          title: `开始时间不能大于结束时间`,
+          icon: 'none'
+        })
+        return
+      }
+      // 得到时分秒
+      const Second = new Date()
+      const SecondTime = this.$time.formatTime(Second)
+      const tmpStartTime = `${this.budgetStartTime} ${SecondTime}`
+      const tmpEndTime = `${this.budgetEndTime} ${SecondTime}`
+      // 时间转化为时间戳
+      let startDate = this.$time.turnTimeStamp(tmpStartTime)
+      let endDate = this.$time.turnTimeStamp(tmpEndTime)
+      // 校验：如果预算为总预算，判断数据库里是否已存在总预算//判断该总预算的金额是否有超过该月份的分类预算金额
+      // 。。。
+      // 校验：如果预算为分类预算，判断该分类预算的金额是否超过该月份的总预算金额
+      // 。。。
+      // 发起请求
+      const data = {
+        id: this.budgetInfo.id,
+        classification: this.budgetClassification,
+        budget: this.budgetMoney,
+        warmMoney: this.budgetTipMoney,
+        beginTime: startDate,
+        endTime: endDate
+      }
+      console.log('更新预算data', data)
+      // let res = await this.$api.budget.updateBudget(data)
+      // console.log('添加预算res', res)
+      // if (res.error) {
+      //   return
+      // }
+      // wx.switchTab({
+      //   url: `../index/main`
+      // })
+    },
+
+    async deleteBudget () {
+      const data = {
+        id: this.budgetInfo.id
+      }
+      let res = await this.$api.budget.daleteBudget(data)
+      console.log('删除预算res', res)
+    },
+
+    getBudgetInfo () {
+      let budgetInfo = this.budgetInfo
+      this.budgetClassification = budgetInfo.classification
+      this.budgetStatus = budgetInfo.classification
+      this.budgetMoney = budgetInfo.budget
+      this.budgetInput[0].msg = budgetInfo.budget
+      this.budgetTipMoney = budgetInfo.warnMoney
+      this.budgetInput[1].msg = budgetInfo.warnMoney
+      this.budgetStartTime = budgetInfo.beginTime
+      this.startTimeInput.time = budgetInfo.beginTime.slice(5)
+      this.startTimeInput.date = budgetInfo.beginTime
+      this.budgetEndTime = budgetInfo.endTime
+      this.endTimeInput.time = budgetInfo.endTime.slice(5)
+      this.endTimeInput.date = budgetInfo.endTime
+    },
 
     getTime () {
       // 获取时间
@@ -300,9 +328,10 @@ export default {
     }
   },
 
-  onLoad: function () {
+  onShow: function () {
     // 获取时间
     this.getTime()
+    this.getBudgetInfo()
   },
 
   onUnload: function () {

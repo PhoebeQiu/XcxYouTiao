@@ -80,6 +80,7 @@ export default {
     // 获取userInfo数据
     userInfo () {
       let userInfo = this.vuexGetUserInfo
+      console.log('vuex,userInfo', userInfo)
       return userInfo
     }
   },
@@ -138,12 +139,12 @@ export default {
         phone: this.phone,
         signature: this.signature
       }
-      console.log('data', data)
       let res = await this.$api.auth.updateCustomer(data)
       console.log('更新用户信息', res)
-      // if (res.error) {
-      //   return
-      // }
+      let type = 1
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     }
   },
 

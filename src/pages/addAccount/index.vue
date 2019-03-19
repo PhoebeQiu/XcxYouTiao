@@ -52,6 +52,7 @@ export default {
       this.input.msg = ''
       this.select.colorId = '0'
       this.accSign = 0
+      this.accName = ''
     },
 
     removeColorStorage () {
@@ -101,8 +102,9 @@ export default {
       // wx.navigateTo({
       //   url: `../account/main`
       // })
-      wx.redirectTo({
-        url: `../account/main`
+      let type = 2
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
       })
     }
   },

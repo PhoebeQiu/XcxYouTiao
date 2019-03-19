@@ -314,9 +314,10 @@ export default {
         return
       }
       console.log('更新费用信息', res)
-      // wx.switchTab({
-      //   url: `../index/main`
-      // })
+      let type = 6
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     },
 
     async deletaFee () {
@@ -329,9 +330,10 @@ export default {
         return
       }
       console.log('删除费用信息', res)
-      // wx.switchTab({
-      //   url: `../index/main`
-      // })
+      let type = 7
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     },
 
     getFeeInfo () {
@@ -345,7 +347,7 @@ export default {
       this.feeMoney = feeInfo.expenses
       this.moneyInput.msg = feeInfo.expenses
       this.feeDesc = feeInfo.description
-      // 处理时间，
+      // 处理时间
       let date = feeInfo.expenseDate
       this.feeDate = this.$time.getTime(date)
       this.dateValue = this.$time.getTimeValue(date).slice(5)
@@ -353,6 +355,11 @@ export default {
   },
 
   onLoad: function () {
+    const { pageStatus } = this.$root.$mp.query
+    if (pageStatus === '1') {
+      this.pageStatus = pageStatus
+    }
+    // 时间
     const mydate = new Date()
     const today = this.$time.getTime(mydate)
     this.feeType = 0

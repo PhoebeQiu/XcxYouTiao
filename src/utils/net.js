@@ -1,6 +1,6 @@
 // const SERVER_URL = 'http://120.77.86.76:9090/youtiao-1-Version'
-// const SERVER_URL = 'http://120.77.86.76:9090'
-const SERVER_URL = 'http://192.168.8.39:9090'
+const SERVER_URL = 'http://120.77.86.76:9090'
+// const SERVER_URL = 'http://192.168.8.39:9090'
 
 async function apiRequest ({path = '', method = 'GET', data = {}, header = {}} = {}) {
   const url = SERVER_URL + path

@@ -2,9 +2,9 @@
   <div class="contain">
     <div class="header">
       <image @click="toAccount" class="header_account" src="../../static/images/ic_account.png" mode='aspectFill'/>
-      <div @click="toBudget" class="header_text">
-        <p>添加预算</p>
-        <p v-if="totalBudgetId !== null">{{ totalBudgetMoney }}</p>
+      <div class="header_text">
+        <p @click="toAddBudget" v-if="totalBudgetId == null">添加预算</p>
+        <p @click="toBudget" v-if="totalBudgetId !== null">剩余:{{ totalBudgetMoney }}</p>
       </div>
       <image @click="toShowDayFee" class="header_calendar" src="../../static/images/ic_calendar.png" mode='aspectFill'/>
     </div>
@@ -96,6 +96,12 @@ export default {
       })
     },
 
+    toAddBudget () {
+      wx.navigateTo({
+        url: `../addBudget/main`
+      })
+    },
+
     getToken () {
       return wx.getStorageSync('token')
     },
@@ -167,7 +173,7 @@ export default {
       }
       console.log('该账本详细信息', res.data)
       this.totalBudgetId = res.data.totalBudgetId
-      this.totalBudgetMoney = res.data.totalBudgetMoney
+      this.totalBudgetMoney = this.$wxApi.toMoney(res.data.totalBudgetMoney)
     },
 
     async resetAccountOpenHistory (accountId) {
@@ -227,7 +233,7 @@ export default {
   height: 48rpx;
 }
 .header_text {
-  width: 200rpx;
+  width: 220rpx;
   height: 44rpx;
   border: 1rpx solid #bfbfbf;
   border-radius: 30rpx;

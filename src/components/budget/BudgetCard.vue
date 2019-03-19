@@ -1,22 +1,30 @@
 <template>
-  <div class="item">
-    <p v-if="budgetItem.isBudgetToal === 0" class="item_title">月总预算</p>
-    <p v-if="budgetItem.isBudgetToal === 1" class="item_title">月分类预算 </p>
-    <span v-show="budgetItem.isBudgetType" class="item_type">{{ enpenseType[budgetItem.enpenseType] }}</span>
-    <p class="item_time">{{ budgetItem.startTime }}--{{ budgetItem.endTime }}</p>
-    <div class="progress">
-      <progress stroke-width="40rpx" border-radius="25rpx" backgroundColor="#eeeeee"
-      :activeColor="budgetItem.isBudgetToal === 0 ? '#de6f6f' : '#ffdeb3'" :percent="budgetItem.percent" />
-      <div class="overMoney">剩余：3000.00</div>
-    </div>
-    <div class="item_money">
-      <p class="item_money_out">已花：<span>{{ budgetItem.cost }}</span></p>
-      <p class="item_money_plan">计划：<span>{{ budgetItem.budget }}</span></p>
+  <div class="contain">
+    <div v-for="(item, index) in budgetItem" :key="index">
+      <div @click="toBudgetInfo(index)" class="item">
+        <p v-if="item.classification === 9" class="item_title">月总预算</p>
+        <p v-if="item.classification !== 9" class="item_title">月分类预算 </p>
+        <span v-if="item.classification !== 9" class="item_type">{{ enpenseType[item.classification] }}</span>
+        <p class="item_time">{{ item.beginTime }}--{{ item.endTime }}</p>
+        <div class="progress">
+          <progress stroke-width="40rpx" border-radius="25rpx" backgroundColor="#eeeeee"
+          :activeColor="item.classification === 9 ? '#de6f6f' : '#ffdeb3'" :percent="item.percent" />
+          <div class="overMoney">剩余：{{ item.item }}</div>
+        </div>
+        <div class="item_money">
+          <p class="item_money_out">已花：<span>{{ item.item }}</span></p>
+          <p class="item_money_plan">计划：<span>{{ item.budget }}</span></p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  mapActions
+} from 'vuex'
+
 export default {
   props: {
     budgetItem: {
@@ -29,6 +37,32 @@ export default {
     return {
       enpenseType: ['餐饮', '交通', '购物', '居住', '娱乐', '医疗', '教育', '人情', '其他支出']
     }
+  },
+
+  methods: {
+    ...mapActions('budget', [
+      'vuexSetBudgetInfo'
+    ]),
+
+    toBudgetInfo (index) {
+      let budgetInfo = this.budgetItem[index]
+      // const feeInfo = {
+      //   id: res.data.id,
+      //   budgetId: res.data.budgetId,
+      //   classification: res.data.classification,
+      //   description: res.data.description,
+      //   expenseDate: res.data.expenseDate,
+      //   expenses: res.data.expenses,
+      //   type: res.data.type
+      // }
+      this.vuexSetBudgetInfo(budgetInfo)
+      wx.navigateTo({
+        url: `../budgetInfo/main`
+      })
+    }
+  },
+
+  onLoad () {
   }
 }
 </script>

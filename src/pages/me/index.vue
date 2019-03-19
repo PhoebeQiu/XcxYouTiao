@@ -8,7 +8,10 @@
           <span v-if="userInfo.name">{{ userInfo.name }}</span>
           <span v-if="userInfo.name == ''">{{ userInfo.wxName }}</span>
         </p>
-        <p class="user_desc">这个人没有留言哦</p>
+        <p class="user_desc">
+          <span v-if="userInfo.name">{{ userInfo.signature }}</span>
+          <span v-if="userInfo.name == ''">这个人没有留言哦</span>
+        </p>
       </div>
     </div>
 
@@ -129,6 +132,7 @@ export default {
   font-size: 34rpx;
   font-weight: 500;
   letter-spacing: 0.26rpx;
+  margin-bottom: 5rpx;
 }
 .user_desc {
   height: 36rpx;

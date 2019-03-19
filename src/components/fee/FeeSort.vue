@@ -53,7 +53,10 @@ export default {
     }
   },
 
-  onShow () {
+  watch: {
+    feeStatus () {
+      this.status = this.feeStatus
+    }
   },
 
   onUnload: function () {

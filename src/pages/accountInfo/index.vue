@@ -112,7 +112,9 @@ export default {
       }
       console.log('更新后：', res)
       this.removeColorStorage()
-      wx.navigateBack({
+      let type = 3
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
       })
     },
 
@@ -125,11 +127,9 @@ export default {
         return
       }
       this.removeColorStorage()
-      // wx.navigateTo({
-      //   url: `../account/main`
-      // })
-      wx.redirectTo({
-        url: `../account/main`
+      let type = 4
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
       })
     }
   },

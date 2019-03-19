@@ -30,37 +30,49 @@
 
     <div class="chart">
       <p v-if="chartsData == false" class="no_chart">这段时间没有记录任何费用~</p>
-      <div v-if="chartsData != false" class="chartOption">
-        <div class="chartOption_item" @click="changeInOutType(0)">
-          <image class="chartOption_item_img" mode='aspectFill'
-          :src="inOutType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-          <div class="chartOption_item_write">
-            <span :class="inOutType === 0 ? 'chartOption_item_red' : ''">总支出</span>
-            <p :class="inOutType === 0 ? 'chartOption_item_red' : ''">{{ totalOutExpenses }}</p>
+      <div v-if="chartsData != false">
+        <div v-if="ChartsType === 0" class="moonChart">
+          <div class="chartOption">
+            <div class="chartOption_item" @click="changeInOutType(0)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutType === 0 ? 'chartOption_item_red' : ''">总支出</span>
+                <p :class="inOutType === 0 ? 'chartOption_item_red' : ''">{{ totalOutExpenses }}</p>
+              </div>
+            </div>
+            <div class="chartOption_item" @click="changeInOutType(1)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutType === 1 ? 'chartOption_item_red' : ''">总收入</span>
+                <p :class="inOutType === 1 ? 'chartOption_item_red' : ''">{{ totalInExpenses }}</p>
+              </div>
+            </div>
+            <div class="chartOption_item" @click="changeInOutType(2)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutType === 2 ? 'chartOption_item_red' : ''">总结余</span>
+                <p :class="inOutType === 2 ? 'chartOption_item_red' : ''">{{ surplus }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="echarts-wrap">
+            <mpvue-echarts :echarts="echarts" :onInit="initChart"
+              ref="echarts" disableTouch
+              />
           </div>
         </div>
-        <div class="chartOption_item" @click="changeInOutType(1)">
-          <image class="chartOption_item_img" mode='aspectFill'
-          :src="inOutType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-          <div class="chartOption_item_write">
-            <span :class="inOutType === 1 ? 'chartOption_item_red' : ''">总收入</span>
-            <p :class="inOutType === 1 ? 'chartOption_item_red' : ''">{{ totalInExpenses }}</p>
-          </div>
-        </div>
-        <div class="chartOption_item" @click="changeInOutType(2)">
-          <image class="chartOption_item_img" mode='aspectFill'
-          :src="inOutType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-          <div class="chartOption_item_write">
-            <span :class="inOutType === 2 ? 'chartOption_item_red' : ''">总结余</span>
-            <p :class="inOutType === 2 ? 'chartOption_item_red' : ''">{{ surplus }}</p>
+        <div v-if="ChartsType === 1" class="brokenChart">
+          <div class="echarts-wrap">
+            <mpvue-echarts :echarts="echarts" :onInit="initChart"
+              ref="echarts" disableTouch
+              />
           </div>
         </div>
       </div>
-      <div v-if="chartsData != false" class="echarts-wrap">
-        <mpvue-echarts :echarts="echarts" :onInit="initChart"
-          ref="echarts" disableTouch
-          />
-      </div>
+
     </div>
 
     <div v-if="listData"  class="datail">
@@ -106,6 +118,8 @@ export default {
       monthTime: 0,
       yearTime: 0,
       endMonthTime: 0,
+      // 报表的显示类型 0饼图,1折线图
+      ChartsType: 0,
       // 报表的数据类型  0总支出，1总收入，2总结余
       inOutType: 0,
       // 固定
@@ -249,8 +263,10 @@ export default {
       this.chartsAllData = res.data
       // 设置数据，总支出/总收入/总结余
       this.setInOutType()
+      this.setBrokenData()
       // 按照 0总支出，1总收入，2总结余，处理数据
       let tmpInOutType = this.inOutType
+      // ChartsType,折线图设置
       if (tmpInOutType === 0) {
         this.chartsData = this.chartsOutData
         this.listData = this.listOutData
@@ -328,6 +344,9 @@ export default {
       }
     },
 
+    // 设置折线图数据
+    setBrokenData () {},
+
     // 修改表格显示的 总支出/总收入/总结余
     changeInOutType (num) {
       this.inOutType = num
@@ -344,6 +363,14 @@ export default {
       this.setChartOption()
     },
 
+    // 修改表格的图型
+    changeTypeStatus (options) {
+      let typeStatus = options
+      this.ChartsType = typeStatus
+      // ChartsType,折线图设置
+    },
+
+    // 饼图
     setChartOption () {
       // 配置表格option项
       this.chartOption = {
@@ -369,6 +396,25 @@ export default {
       this.$refs.echarts.init()
     },
 
+    // 折线图
+    setBrokenChartOption () {
+      // 配置表格option项
+      this.chartOption = {
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          type: 'line'
+        }]
+      }
+      this.$refs.echarts.init()
+    },
+
     initChart (canvas, width, height) {
       // 加载表格
       chart = echarts.init(canvas, null, {
@@ -380,18 +426,6 @@ export default {
 
       // 返回 chart 后可以自动绑定触摸操作
       return chart
-    },
-
-    changeTypeStatus (options) {
-      // 修改表格的图型
-      // let typeStatus = options
-      // this.ChartsType = typeStatus
-      // 文本框
-      // if (typeStatus === 0) {
-      //   this.moneyInput.dotStatus = '1'
-      // } else {
-      //   this.moneyInput.dotStatus = '0'
-      // }
     },
 
     // 修改 年/月报表
@@ -522,6 +556,15 @@ export default {
   line-height: 600rpx;
   font-size: 34rpx;
   color: #b2b2b2;
+}
+.moonChart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.brokenChart {
+
 }
 .chartOption {
   width: 690rpx;

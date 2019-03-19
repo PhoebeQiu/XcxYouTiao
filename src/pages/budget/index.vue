@@ -1,7 +1,7 @@
 <template>
   <div class="contain">
     <div class="budget">
-      <BudgetCard :budgetItem="budgetItem" />
+      <BudgetCard :budgetItem="budgetList" />
     </div>
 
     <div class="btn" @click="toAddBudget">
@@ -20,15 +20,7 @@ import WButton from '@/components/WButton'
 export default {
   data () {
     return {
-      budgetItem: {
-        isBudgetToal: 1,
-        isBudgetType: true,
-        percent: 60,
-        startTime: '2019.03.01',
-        endTime: '2019.03.31',
-        budget: 5000.00,
-        cost: 2000.00,
-        enpenseType: 4
+      budgetList: {
       }
     }
   },
@@ -51,6 +43,7 @@ export default {
   },
 
   methods: {
+
     toAddBudget () {
       wx.navigateTo({
         url: `../addBudget/main`
@@ -63,15 +56,28 @@ export default {
         pageNum: 1,
         pageSize: 10
       }
-      console.log('所有预算data', data)
       let res = await this.$api.budget.getAllBudgetList(data)
-      console.log('所有预算res', res)
+      console.log('所有预算res', res.data.result)
+      let budgetData = res.data.result
+      this.budgetList = budgetData.map(item => {
+        return {
+          id: item.id,
+          budget: item.budget,
+          warnMoney: item.warnMoney,
+          classification: item.classification,
+          beginTime: this.$time.getTime(this.$time.turnTime(item.beginTime)),
+          endTime: this.$time.getTime(this.$time.turnTime(item.endTime))
+        }
+      })
     }
   },
 
-  onLoad () {
-    // 获取时间
+  onShow () {
+    // 获取 预算列表
     this.getBudgetList()
+  },
+
+  onLoad () {
   }
 }
 </script>

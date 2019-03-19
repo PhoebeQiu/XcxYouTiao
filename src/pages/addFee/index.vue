@@ -33,11 +33,8 @@
     </div>
 
     <div class="btn">
-      <div @click="reAddFee">
-        <WButton text="再记一笔" size="small_btn" bgstyle="border_red" />
-      </div>
       <div @click="addFee">
-        <WButton text="保存" size="small_btn" bgstyle="bgcolor_red" />
+        <WButton text="保存" size="big_btn" bgstyle="bgcolor_red" />
       </div>
     </div>
 
@@ -303,8 +300,9 @@ export default {
       if (res.error) {
         return
       }
-      wx.switchTab({
-        url: `../index/main`
+      let type = 5
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
       })
     }
   },

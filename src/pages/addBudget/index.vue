@@ -271,15 +271,12 @@ export default {
         beginTime: startDate,
         endTime: endDate
       }
-      console.log('添加预算data', data)
       let res = await this.$api.budget.addBudget(data)
       console.log('添加预算res', res)
-      // if (res.error) {
-      //   return
-      // }
-      // wx.switchTab({
-      //   url: `../index/main`
-      // })
+      let type = 8
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     },
 
     getTime () {
