@@ -95,7 +95,7 @@ export default {
       }
       console.log('添加账本data:', data)
       let res = await this.$api.accountBook.addAccount(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       this.removeColorStorage()
@@ -110,11 +110,12 @@ export default {
   },
 
   onLoad: function () {
-    wx.setStorageSync('colorId', this.select.colorId)
   },
 
   onShow () {
+    wx.setStorageSync('colorId', this.select.colorId)
     let colorId = wx.getStorageSync('colorId')
+    console.log('onShow', colorId)
     if (colorId) {
       this.select.colorId = colorId
     }

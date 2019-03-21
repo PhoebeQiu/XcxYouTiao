@@ -12,7 +12,7 @@
           <div class="overMoney">剩余：{{ item.item }}</div>
         </div>
         <div class="item_money">
-          <p class="item_money_out">已花：<span>{{ item.item }}</span></p>
+          <p class="item_money_out">已花：<span>{{ item.spentMoney }}</span></p>
           <p class="item_money_plan">计划：<span>{{ item.budget }}</span></p>
         </div>
       </div>

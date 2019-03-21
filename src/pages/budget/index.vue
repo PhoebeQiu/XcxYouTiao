@@ -57,8 +57,17 @@ export default {
         pageSize: 10
       }
       let res = await this.$api.budget.getAllBudgetList(data)
+      if (res.errCode) {
+        return
+      }
       console.log('所有预算res', res.data.result)
       let budgetData = res.data.result
+      // 处理总预算的classification
+      for (let i = 0; i < budgetData.length; i++) {
+        if (budgetData[i].classification === -1) {
+          budgetData[i].classification = 9
+        }
+      }
       this.budgetList = budgetData.map(item => {
         return {
           id: item.id,
@@ -66,7 +75,8 @@ export default {
           warnMoney: item.warnMoney,
           classification: item.classification,
           beginTime: this.$time.getTime(this.$time.turnTime(item.beginTime)),
-          endTime: this.$time.getTime(this.$time.turnTime(item.endTime))
+          endTime: this.$time.getTime(this.$time.turnTime(item.endTime)),
+          spentMoney: item.spentMoney
         }
       })
     }
@@ -91,6 +101,7 @@ export default {
 
 .budget {
   width: 690rpx;
+  margin-bottom: 180rpx;
 }
 
 .btn {

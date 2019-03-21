@@ -151,7 +151,7 @@ export default {
         searchDay: date
       }
       let res = await this.$api.expenses.getOneDayExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       let feeData = res.data.listExpenses

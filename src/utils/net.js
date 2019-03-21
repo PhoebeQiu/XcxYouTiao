@@ -19,9 +19,9 @@ async function apiRequest ({path = '', method = 'GET', data = {}, header = {}} =
 
 function wxRequest ({url = '', method = 'GET', data = {}, header = {}} = {}) {
   return new Promise((resolve, reject) => {
-    wx.showLoading({
-      title: '拼命加载中...'
-    })
+    // wx.showLoading({
+    //   title: '拼命加载中...'
+    // })
 
     wx.request({
       url: url,
@@ -29,7 +29,7 @@ function wxRequest ({url = '', method = 'GET', data = {}, header = {}} = {}) {
       method: method,
       header: header,
       success: (res) => {
-        wx.hideLoading()
+        // wx.hideLoading()
         if (res.data.errCode === 2000) {
           wx.removeStorageSync('token')
           wx.reLaunch({

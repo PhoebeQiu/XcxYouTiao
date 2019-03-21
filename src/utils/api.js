@@ -205,6 +205,16 @@ export default {
         data
       }
       return request(params)
+    },
+
+    // 展示某区间内的（收入、支出、结余）
+    showExpensesTrendBetweenInterval (data) {
+      const params = {
+        path: `/expenses/showExpensesTrendBetweenIntervalByAccountBookId`,
+        method: 'POST',
+        data
+      }
+      return request(params)
     }
   },
 

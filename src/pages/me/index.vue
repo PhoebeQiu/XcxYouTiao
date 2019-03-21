@@ -79,6 +79,9 @@ export default {
       // 请求：获取用户信息
       const data = {}
       const res = await this.$api.auth.getCustomer(data)
+      if (res.errCode) {
+        return
+      }
       console.log('获取用户信息', res.data)
       const userData = {
         name: res.data.name,

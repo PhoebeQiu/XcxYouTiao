@@ -20,6 +20,10 @@
 </template>
 
 <script>
+import {
+  mapGetters,
+  mapActions
+} from 'vuex'
 import WInput from '@/components/WInput'
 import WSelect from '@/components/WSelectColor'
 import WButton from '@/components/WButton'
@@ -46,6 +50,18 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('accountBook', [
+      'vuexGetAccountBook'
+    ]),
+
+    // 获取数据
+    accountBook () {
+      let accountBook = this.vuexGetAccountBook
+      return accountBook
+    }
+  },
+
   components: {
     WInput,
     WSelect,
@@ -53,6 +69,10 @@ export default {
   },
 
   methods: {
+    ...mapActions('accountBook', [
+      'vuexSetAccountBook'
+    ]),
+
     initState () {
       this.input.msg = ''
       this.select.colorId = '0'
@@ -62,13 +82,13 @@ export default {
     removeColorStorage () {
       try {
         wx.removeStorageSync('colorId')
-        console.log('删除colorId成功')
       } catch (e) {
         console.log('删除colorId失败')
       }
     },
 
-    getAccountInfo (account) {
+    getAccountInfo () {
+      let account = this.accountBook
       this.accName = account.name
       this.accountInfo = account
       this.input.msg = account.name
@@ -77,10 +97,10 @@ export default {
     },
 
     setInputValue (options) {
-      console.log('options', options)
       // 账本名称
       if (options.type === 'accountName') {
         this.accName = options.msg
+        this.input.msg = options.msg
       }
     },
 
@@ -107,10 +127,10 @@ export default {
       }
       console.log('参数', data)
       let res = await this.$api.accountBook.updateAccount(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
-      console.log('更新后：', res)
+      this.vuexSetAccountBook(data)
       this.removeColorStorage()
       let type = 3
       wx.navigateTo({
@@ -123,7 +143,7 @@ export default {
         id: this.accountInfo.id
       }
       let res = await this.$api.accountBook.deleteAccount(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       this.removeColorStorage()
@@ -134,9 +154,8 @@ export default {
     }
   },
 
-  onLoad: function (options) {
-    let account = JSON.parse(options.account)
-    this.getAccountInfo(account)
+  onLoad: function () {
+    this.getAccountInfo()
   },
 
   onShow () {

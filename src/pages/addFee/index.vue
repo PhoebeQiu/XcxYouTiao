@@ -297,7 +297,7 @@ export default {
         expenseDate: date
       }
       let res = await this.$api.expenses.addExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       let type = 5

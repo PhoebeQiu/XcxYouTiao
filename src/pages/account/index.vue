@@ -64,7 +64,7 @@ export default {
         pageSize: 10
       }
       let res = await this.$api.accountBook.getAllAccount(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('请求所有账本', res.data.result)

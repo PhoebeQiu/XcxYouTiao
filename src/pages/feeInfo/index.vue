@@ -310,7 +310,7 @@ export default {
         expensesDate: date
       }
       let res = await this.$api.expenses.updateExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('更新费用信息', res)
@@ -326,7 +326,7 @@ export default {
         id: this.feeId
       }
       let res = await this.$api.expenses.deleteExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('删除费用信息', res)

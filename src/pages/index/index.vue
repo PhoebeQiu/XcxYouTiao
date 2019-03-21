@@ -63,7 +63,7 @@ export default {
       'vuexGetAccountBook'
     ]),
 
-    // 获取userInfo数据
+    // 获取数据
     accountBook () {
       let accountBook = this.vuexGetAccountBook
       return accountBook
@@ -113,7 +113,7 @@ export default {
         recentDay: 7
       }
       let res = await this.$api.expenses.getSomeDaysExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('近7天的费用列表', res.data)
@@ -154,7 +154,7 @@ export default {
         date: date
       }
       let res = await this.$api.expenses.getSumInAndOutExpenses(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('该月份的的总费用', res.data)
@@ -168,7 +168,7 @@ export default {
         id: this.accountBook.id
       }
       let res = await this.$api.accountBook.getAccountById(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('该账本详细信息', res.data)
@@ -182,7 +182,7 @@ export default {
         accountBookId: accountId
       }
       let res = await this.$api.accountBook.resetAccountOpenHistory(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log()

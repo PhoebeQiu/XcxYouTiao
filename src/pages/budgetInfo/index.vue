@@ -275,19 +275,23 @@ export default {
         id: this.budgetInfo.id,
         classification: this.budgetClassification,
         budget: this.budgetMoney,
-        warmMoney: this.budgetTipMoney,
+        warnMoney: this.budgetTipMoney,
         beginTime: startDate,
         endTime: endDate
       }
       console.log('更新预算data', data)
-      // let res = await this.$api.budget.updateBudget(data)
-      // console.log('添加预算res', res)
-      // if (res.error) {
-      //   return
-      // }
-      // wx.switchTab({
-      //   url: `../index/main`
-      // })
+      let res = await this.$api.budget.updateBudget(data)
+      if (res.errCode) {
+        return
+      }
+      console.log('更新预算res', res)
+      if (res.errCode) {
+        return
+      }
+      let type = 9
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     },
 
     async deleteBudget () {
@@ -295,7 +299,17 @@ export default {
         id: this.budgetInfo.id
       }
       let res = await this.$api.budget.daleteBudget(data)
+      if (res.errCode) {
+        return
+      }
       console.log('删除预算res', res)
+      if (res.errCode) {
+        return
+      }
+      let type = 10
+      wx.navigateTo({
+        url: `../successPage/main?type=${type}`
+      })
     },
 
     getBudgetInfo () {

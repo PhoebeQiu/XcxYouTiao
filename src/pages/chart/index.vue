@@ -29,9 +29,9 @@
     </div>
 
     <div class="chart">
-      <p v-if="chartsData == false" class="no_chart">这段时间没有记录任何费用~</p>
-      <div v-if="chartsData != false">
-        <div v-if="ChartsType === 0" class="moonChart">
+      <div v-if="ChartsType === 0">
+        <p v-if="chartsData.length === 0" class="no_chart">这段时间没有记录任何费用~</p>
+        <div v-if="chartsData.length !== 0" class="moon">
           <div class="chartOption">
             <div class="chartOption_item" @click="changeInOutType(0)">
               <image class="chartOption_item_img" mode='aspectFill'
@@ -60,14 +60,40 @@
           </div>
           <div class="echarts-wrap">
             <mpvue-echarts :echarts="echarts" :onInit="initChart"
-              ref="echarts" disableTouch
+              ref="echarts" disableTouch canvasId="chartMoon"
               />
           </div>
         </div>
-        <div v-if="ChartsType === 1" class="brokenChart">
+      </div>
+      <div v-if="ChartsType === 1">
+        <p v-if="brokenChartsData.length === 0" class="no_chart">这段时间没有记录任何费用~</p>
+        <div v-if="brokenChartsData.length !== 0" class="broken">
+          <div class="chartOption">
+            <div class="chartOption_item" @click="changeBrokenInOutType(0)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutBrokenType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutBrokenType === 0 ? 'chartOption_item_red' : ''">总支出</span>
+              </div>
+            </div>
+            <div class="chartOption_item" @click="changeBrokenInOutType(1)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutBrokenType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutBrokenType === 1 ? 'chartOption_item_red' : ''">总收入</span>
+              </div>
+            </div>
+            <div class="chartOption_item" @click="changeBrokenInOutType(2)">
+              <image class="chartOption_item_img" mode='aspectFill'
+              :src="inOutBrokenType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+              <div class="chartOption_item_write">
+                <span :class="inOutBrokenType === 2 ? 'chartOption_item_red' : ''">总结余</span>
+              </div>
+            </div>
+          </div>
           <div class="echarts-wrap">
-            <mpvue-echarts :echarts="echarts" :onInit="initChart"
-              ref="echarts" disableTouch
+            <mpvue-echarts :echarts="echarts" :onInit="initBrokenChart"
+              ref="echarts" canvasId="chartBroken"
               />
           </div>
         </div>
@@ -75,14 +101,16 @@
 
     </div>
 
-    <div v-if="listData"  class="datail">
-      <div v-for="(item, index) in listData" :key="index" class="detail_item">
-        <image class="detail_item_ic" :src="item.img" mode="aspectFill" />
-        <p class="detail_item_name">{{ item.name }}</p>
-        <p class="detail_item_percent">{{ item.percent }}</p>
-        <p class="detail_item_value">{{ item.value }}</p>
-        <image class="detail_item_arrow" src="../../static/images/ic_arrow.png" mode="aspectFill" />
-        <div class="line"></div>
+    <div v-if="ChartsType === 0">
+      <div v-if="listData"  class="datail">
+        <div v-for="(item, index) in listData" :key="index" class="detail_item">
+          <image class="detail_item_ic" :src="item.img" mode="aspectFill" />
+          <p class="detail_item_name">{{ item.name }}</p>
+          <p class="detail_item_percent">{{ item.percent }}</p>
+          <p class="detail_item_value">{{ item.value }}</p>
+          <image class="detail_item_arrow" src="../../static/images/ic_arrow.png" mode="aspectFill" />
+          <div class="line"></div>
+        </div>
       </div>
     </div>
 
@@ -100,7 +128,7 @@ import ChartTitle from '@/components/chart/ChartTitle'
 import * as echarts from 'echarts/dist/echarts.simple.min'
 import mpvueEcharts from 'mpvue-echarts'
 
-let chart = null
+let moonChart, brokenChart
 
 export default {
   components: {
@@ -113,6 +141,7 @@ export default {
     return {
       month: 0,
       year: 0,
+      day: 0,
       // 选择月/年报表 0月，1年
       indexTypePicker: 0,
       monthTime: 0,
@@ -122,6 +151,8 @@ export default {
       ChartsType: 0,
       // 报表的数据类型  0总支出，1总收入，2总结余
       inOutType: 0,
+      // 折线图报表的数据类型  0总支出，1总收入，2总结余
+      inOutBrokenType: 0,
       // 固定
       TypePickerArray: ['月报表', '年报表'],
       inFeeSort: [
@@ -213,6 +244,7 @@ export default {
       // 设置表格参数
       echarts,
       chartOption: null,
+      chartBrokenOption: null,
       // 表格所需数据
       chartsData: [],
       chartsAllData: [],
@@ -226,7 +258,17 @@ export default {
       listData: [],
       listAllData: [],
       listInData: [],
-      listOutData: []
+      listOutData: [],
+      // 折线图所需数据
+      brokenDate: 0,
+      brokenInterval: 0,
+      // 表格所需数据
+      brokenChartsData: [],
+      brokenChartsDate: [],
+      brokenChartsAllData: [],
+      brokenChartsInData: [],
+      brokenChartsOutData: [],
+      brokenChartsSurplusData: []
     }
   },
 
@@ -248,25 +290,33 @@ export default {
       this.indexTypePicker = 0
     },
 
+    // 饼图
     async getFeeChart () {
       // 请求：表格所需数据
-      const data = {
-        accountBookId: this.accountBook.id,
-        year: this.year,
-        month: this.month
+      let data = {}
+      if (this.indexTypePicker === 0) {
+        data = {
+          accountBookId: this.accountBook.id,
+          year: this.year,
+          month: this.month
+        }
+      } else if (this.indexTypePicker === 1) {
+        data = {
+          accountBookId: this.accountBook.id,
+          year: this.year
+        }
       }
+      console.log('请求表格数据data', data)
       let res = await this.$api.expenses.getExpensesGroup(data)
-      if (res.error) {
+      if (res.errCode) {
         return
       }
       console.log('请求表格数据', res.data)
       this.chartsAllData = res.data
       // 设置数据，总支出/总收入/总结余
       this.setInOutType()
-      this.setBrokenData()
       // 按照 0总支出，1总收入，2总结余，处理数据
       let tmpInOutType = this.inOutType
-      // ChartsType,折线图设置
       if (tmpInOutType === 0) {
         this.chartsData = this.chartsOutData
         this.listData = this.listOutData
@@ -277,10 +327,51 @@ export default {
         this.chartsData = this.chartsSurplusData
         this.listData = this.listAllData
       }
+      console.log('饼图chartsData', this.chartsData)
       this.setChartOption()
     },
 
-    // 设置数据，总支出/总收入/总结余
+    // 饼图，option配置
+    setChartOption () {
+      // 配置表格option项
+      this.chartOption = {
+        series: [
+          {
+            name: '费用报表',
+            type: 'pie',
+            radius: ['40%', '55%'],
+            label: {
+              normal: {
+                formatter: '{b} {d}%',
+                color: '#232323',
+                shadowBlur: 3,
+                shadowOffsetX: 2,
+                shadowOffsetY: 2,
+                shadowColor: '#999'
+              }
+            },
+            data: this.chartsData
+          }
+        ]
+      }
+      this.$refs.echarts.init()
+    },
+
+    // 饼图
+    initChart (canvas, width, height) {
+      // 加载表格
+      moonChart = echarts.init(canvas, null, {
+        width: width,
+        height: height
+      })
+      canvas.setChart(moonChart)
+      moonChart.setOption(this.chartOption)
+
+      // 返回 chart 后可以自动绑定触摸操作
+      return moonChart
+    },
+
+    // 饼图，设置数据，总支出/总收入/总结余
     setInOutType () {
       // 封装表格和列表需要的三个数据数组
       this.totalInExpenses = this.chartsAllData.totalInExpenses
@@ -344,10 +435,7 @@ export default {
       }
     },
 
-    // 设置折线图数据
-    setBrokenData () {},
-
-    // 修改表格显示的 总支出/总收入/总结余
+    // 饼图，修改表格显示的 总支出/总收入/总结余
     changeInOutType (num) {
       this.inOutType = num
       if (num === 0) {
@@ -363,85 +451,181 @@ export default {
       this.setChartOption()
     },
 
-    // 修改表格的图型
-    changeTypeStatus (options) {
-      let typeStatus = options
-      this.ChartsType = typeStatus
-      // ChartsType,折线图设置
-    },
-
-    // 饼图
-    setChartOption () {
-      // 配置表格option项
-      this.chartOption = {
-        series: [
-          {
-            name: '费用报表',
-            type: 'pie',
-            radius: ['40%', '55%'],
-            label: {
-              normal: {
-                formatter: '{b} {d}%',
-                color: '#232323',
-                shadowBlur: 3,
-                shadowOffsetX: 2,
-                shadowOffsetY: 2,
-                shadowColor: '#999'
-              }
-            },
-            data: this.chartsData
-          }
-        ]
-      }
-      this.$refs.echarts.init()
-    },
-
     // 折线图
+    async getBrokenFeeChart () {
+      // 请求：某区间内的（收入、支出、结余）
+      // 得到时分秒
+      const Second = new Date()
+      const SecondTime = this.$time.formatTime(Second)
+      const time = `${this.brokenDate} ${SecondTime}`
+      // 时间转化为时间戳
+      let date = this.$time.turnTimeStamp(time)
+      // 请求：所需数据
+      const data = {
+        accountBookId: this.accountBook.id,
+        date: date,
+        interval: this.brokenInterval
+      }
+      console.log('请求折线图表格数据data', data)
+      let res = await this.$api.expenses.showExpensesTrendBetweenInterval(data)
+      if (res.errCode) {
+        return
+      }
+      console.log('请求折线图表格数据', res.data)
+      this.brokenChartsAllData = res.data
+      // 设置数据，总支出/总收入/总结余
+      this.setBrokenInOutType()
+      // 按照 0总支出，1总收入，2总结余，处理数据
+      let tmpinOutBrokenType = this.inOutBrokenType
+      if (tmpinOutBrokenType === 0) {
+        this.brokenChartsData = this.brokenChartsOutData
+      } else if (tmpinOutBrokenType === 1) {
+        this.brokenChartsData = this.brokenChartsInData
+      } else if (tmpinOutBrokenType === 2) {
+        this.brokenChartsData = this.brokenChartsSurplusData
+      }
+      this.setBrokenChartOption()
+    },
+
+    // 折线图，设置数据，总支出/总收入/总结余
+    setBrokenInOutType () {
+      // brokenChartsData: [],
+      // 封装表格需要的四个数据数组
+      // 时间，总支出
+      let outCome = this.brokenChartsAllData.outExpenses
+      this.brokenChartsDate = []
+      if (this.indexTypePicker === 0) {
+        outCome.forEach(element => {
+          this.brokenChartsDate.push(element.date)
+        })
+      } else if (this.indexTypePicker === 1) {
+        outCome.forEach(element => {
+          this.brokenChartsDate.push(element.date.slice(0, 7))
+        })
+      }
+      this.brokenChartsOutData = []
+      outCome.forEach(element => {
+        this.brokenChartsOutData.push(element.number)
+      })
+      // 总收入
+      let inCome = this.brokenChartsAllData.inExpenses
+      this.brokenChartsInData = []
+      inCome.forEach(element => {
+        this.brokenChartsInData.push(element.number)
+      })
+      // 总结余
+      let surplus = this.brokenChartsAllData.surplus
+      this.brokenChartsSurplusData = []
+      surplus.forEach(element => {
+        this.brokenChartsSurplusData.push(element.number)
+      })
+    },
+
+    // 折线图,修改表格显示的 总支出/总收入/总结余
+    changeBrokenInOutType (num) {
+      this.inOutBrokenType = num
+      if (num === 0) {
+        this.brokenChartsData = this.brokenChartsOutData
+      } else if (num === 1) {
+        this.brokenChartsData = this.brokenChartsInData
+      } else if (num === 2) {
+        this.brokenChartsData = this.brokenChartsSurplusData
+      }
+      this.setBrokenChartOption()
+    },
+
+    // 折线图，option配置
     setBrokenChartOption () {
+      console.log('折线图brokenChartsDate', this.brokenChartsDate)
+      console.log('折线图brokenChartsData000', this.brokenChartsData)
       // 配置表格option项
-      this.chartOption = {
+      this.chartBrokenOption = {
+        visualMap: {
+          show: false,
+          type: 'continuous',
+          seriesIndex: 0,
+          min: 0,
+          max: 500
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
         xAxis: {
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          data: this.brokenChartsDate
         },
         yAxis: {
-          type: 'value'
+          splitLine: {show: false}
         },
+        grid: [{
+          bottom: '20%',
+          left: '20%',
+          right: '10%'
+        }],
         series: [{
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
-          type: 'line'
+          type: 'line',
+          showSymbol: false,
+          data: this.brokenChartsData
         }]
       }
       this.$refs.echarts.init()
     },
 
-    initChart (canvas, width, height) {
+    // 折线图
+    initBrokenChart (canvas, width, height) {
       // 加载表格
-      chart = echarts.init(canvas, null, {
+      brokenChart = echarts.init(canvas, null, {
         width: width,
         height: height
       })
-      canvas.setChart(chart)
-      chart.setOption(this.chartOption)
+      canvas.setChart(brokenChart)
+      brokenChart.setOption(this.chartBrokenOption)
 
       // 返回 chart 后可以自动绑定触摸操作
-      return chart
+      return brokenChart
     },
 
-    // 修改 年/月报表
-    TypePickerChange (e) {
-      if (e.mp.detail.value === '0') {
-        this.indexTypePicker = 0
-        this.month = 0
+    // 修改表格的图型
+    changeTypeStatus (options) {
+      let typeStatus = options
+      this.ChartsType = typeStatus
+      // ChartsType,折线图设置
+      if (typeStatus === 0) {
+        console.log('饼图')
+        this.brokenChartsData = []
+        this.brokenChartsDate = []
         this.getFeeChart()
-      } else if (e.mp.detail.value === '1') {
-        this.indexTypePicker = 1
-        const date = new Date()
-        this.month = date.getMonth() + 1
-        this.getFeeChart()
+      } else if (typeStatus === 1) {
+        console.log('折线图')
+        this.chartsData = []
+        this.getBrokenFeeChart()
       }
     },
 
+    // 修改 0月/1年报表
+    TypePickerChange (e) {
+      if (e.mp.detail.value === '0') {
+        this.indexTypePicker = 0
+        const date = new Date()
+        this.month = date.getMonth() + 1
+        if (this.ChartsType === 0) {
+          this.getFeeChart()
+        } else if (this.ChartsType === 1) {
+          this.brokenInterval = 2
+          this.getBrokenFeeChart()
+        }
+      } else if (e.mp.detail.value === '1') {
+        this.indexTypePicker = 1
+        this.month = 0
+        if (this.ChartsType === 0) {
+          this.getFeeChart()
+        } else if (this.ChartsType === 1) {
+          this.brokenInterval = 1
+          this.getBrokenFeeChart()
+        }
+      }
+    },
+
+    // 选择 哪个月
     bindMonthTimeChange (e) {
       let date = e.mp.detail.value
       this.year = date.slice(0, 4)
@@ -449,37 +633,62 @@ export default {
       let y = date.slice(0, 4)
       let m = date.slice(5)
       this.monthTime = `${y}年${m}月`
-      this.getFeeChart()
+      if (this.ChartsType === 0) {
+        this.getFeeChart()
+      } else if (this.ChartsType === 1) {
+        let date = e.mp.detail.value
+        this.brokenDate = `${date}-${this.day}`
+        console.log('选择月', this.brokenDate)
+        this.getBrokenFeeChart()
+      }
     },
 
+    // 选择 哪一年
     bindYearTimeChange (e) {
       let date = e.mp.detail.value
       this.year = date
-      this.monthTime = `${date}年`
-      this.getFeeChart()
+      this.yearTime = `${date}年`
+      if (this.ChartsType === 0) {
+        this.getFeeChart()
+      } else if (this.ChartsType === 1) {
+        let date = e.mp.detail.value
+        const dateTmp = new Date()
+        let m = dateTmp.getMonth() + 1
+        this.brokenDate = `${date}-${m}-${this.day}`
+        console.log('选择年', this.brokenDate)
+        this.getBrokenFeeChart()
+      }
     },
 
     setTime () {
       const date = new Date()
-      this.year = date.getFullYear()
-      this.month = date.getMonth() + 1
-      let time = this.$time.getTime(date)
-      this.endMonthTime = time.slice(0, 7)
       let y = date.getFullYear()
       let m = date.getMonth() + 1
+      m = m < 10 ? ('0' + m) : m
+      let d = date.getDate()
+      d = d < 10 ? ('0' + d) : d
+      let time = this.$time.getTime(date)
+      this.endMonthTime = time.slice(0, 7)
+      this.year = y
+      this.month = m
+      this.day = d
+      // 设置，饼图日期
       this.monthTime = `${y}年${m}月`
       this.yearTime = `${y}年`
+      // 设置，折线图日期
+      this.brokenDate = time
+      this.brokenInterval = 2
     }
   },
 
   onShow () {
     wx.hideTabBar()
-    // 加载报表数据
-    this.getFeeChart()
   },
 
   onLoad () {
     this.setTime()
+    // 加载报表数据
+    this.getFeeChart()
   },
 
   onUnload: function () {
@@ -564,7 +773,10 @@ export default {
   flex-direction: column;
 }
 .brokenChart {
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .chartOption {
   width: 690rpx;
@@ -586,6 +798,7 @@ export default {
 .chartOption_item_write {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   height: 80rpx;
 }
 .chartOption_item_write span {
@@ -603,6 +816,8 @@ export default {
 .echarts-wrap {
   width: 690rpx;
   height: 460rpx;
+  justify-content: center;
+  align-items: center;
 }
 
 .datail {

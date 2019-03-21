@@ -52,15 +52,15 @@ export default {
     ]),
 
     longpress (index) {
-      const data = JSON.stringify(this.accountItem[index])
-      console.log('选中账本信息', data)
+      let accBook = this.accountItem[index]
+      this.vuexSetAccountBook(accBook)
       wx.navigateTo({
-        url: `../accountInfo/main?account=${data}`
+        url: `../accountInfo/main`
       })
     },
 
     toIndex (index) {
-      const accBook = this.accountItem[index]
+      let accBook = this.accountItem[index]
       this.vuexSetAccountBook(accBook)
       wx.switchTab({
         url: `../index/main`

@@ -267,11 +267,18 @@ export default {
         accountBookId: this.accountBook.id,
         classification: this.budgetClassification,
         budget: this.budgetMoney,
-        warmMoney: this.budgetTipMoney,
+        warnMoney: this.budgetTipMoney,
         beginTime: startDate,
         endTime: endDate
       }
+      console.log('添加预算data', data)
       let res = await this.$api.budget.addBudget(data)
+      if (res.errCode) {
+        return
+      }
+      if (res.orror) {
+        return
+      }
       console.log('添加预算res', res)
       let type = 8
       wx.navigateTo({

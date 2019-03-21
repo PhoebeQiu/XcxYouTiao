@@ -140,6 +140,9 @@ export default {
         signature: this.signature
       }
       let res = await this.$api.auth.updateCustomer(data)
+      if (res.errCode) {
+        return
+      }
       console.log('更新用户信息', res)
       let type = 1
       wx.navigateTo({

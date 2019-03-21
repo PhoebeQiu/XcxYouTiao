@@ -144,6 +144,7 @@ export default {
       this.content = '操作成功'
       this.btnLeft = '返回'
       this.btnRight = '回到首页'
+      this.backStatus = 0
     }
   },
 

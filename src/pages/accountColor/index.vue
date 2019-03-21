@@ -42,7 +42,6 @@ export default {
 
   onLoad () {
     let colorId = wx.getStorageSync('colorId')
-    console.log('colorId', colorId)
     let color = this.items[colorId].color
     this.selectColor = color
   },
