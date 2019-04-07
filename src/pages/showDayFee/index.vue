@@ -1,7 +1,7 @@
 <template>
   <div class="contain">
     <div class="cal">
-      <calendar weeks-type="cn" end-date="2019-02"
+      <calendar weeks-type="cn" :end-date="endDate"
         calendar-style="calendar" header-style="header" board-style="board"
         :days-color="dayStyle"
         @nextMonth="nextMonth"
@@ -51,6 +51,7 @@ export default {
       sumOutExpenses: 0,
       sumExpenses: 0,
       // 日历
+      endDate: '2019-03',
       nowYear: 0,
       nowMonth: 0,
       nowDay: 0,
@@ -96,27 +97,40 @@ export default {
       that.date = today
     },
 
+    // 选择下一个月
     nextMonth (e) {
       console.log('next:', e.mp.detail)
+      this.year = e.mp.detail.currentYear
+      this.month = e.mp.detail.currentMonth
+      this.changeMonth()
     },
 
+    // 选择上一个月
     prevMonth (e) {
       console.log('prev:', e.mp.detail)
+      this.year = e.mp.detail.currentYear
+      this.month = e.mp.detail.currentMonth
+      this.changeMonth()
     },
 
     // 修改日历的年月
     dateChange (e) {
       this.year = e.mp.detail.currentYear
       this.month = e.mp.detail.currentMonth
-      console.log('dateChange:', e.mp.detail)
+      this.changeMonth()
     },
 
     // 选择日期
     dayClick (e) {
+      console.log('dayClick:', e.mp.detail)
       let clickDay = e.mp.detail
       this.year = clickDay.year
       this.month = clickDay.month
       this.day = clickDay.day
+      this.changeMonth()
+    },
+
+    changeMonth () {
       const nowday = [this.nowYear, this.nowMonth, this.nowDay]
       const clickday = [this.year, this.month, this.day]
       // 设置选中日期，样式
@@ -127,7 +141,7 @@ export default {
         this.dayStyle = _dayStyle
       } else {
         const _dayStyle = [
-          { month: 'current', day: clickDay.day, color: 'white', background: '#ffdeb3' }
+          { month: 'current', day: this.day, color: 'white', background: '#ffdeb3' }
         ]
         this.dayStyle = _dayStyle
       }
@@ -180,8 +194,15 @@ export default {
   },
 
   onLoad: function () {
+    const Second = new Date()
+    const aTime = this.$time.getTime(Second)
+    this.endDate = aTime.slice(0, 7)
+    this.year = aTime.slice(0, 4)
+    this.month = aTime.slice(5, 7)
+    this.day = aTime.slice(8, 10)
     this.setTodayStyle()
     this.getDayFee()
+    console.log('sadasd')
   },
 
   onUnload: function () {

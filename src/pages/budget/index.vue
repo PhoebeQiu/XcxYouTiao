@@ -61,6 +61,9 @@ export default {
         return
       }
       console.log('所有预算res', res.data.result)
+      if (res.data.result.length === 0) {
+        wx.navigateBack({})
+      }
       let budgetData = res.data.result
       // 处理总预算的classification
       for (let i = 0; i < budgetData.length; i++) {
@@ -76,7 +79,10 @@ export default {
           classification: item.classification,
           beginTime: this.$time.getTime(this.$time.turnTime(item.beginTime)),
           endTime: this.$time.getTime(this.$time.turnTime(item.endTime)),
-          spentMoney: item.spentMoney
+          spentMoney: item.spentMoney,
+          remainMoney: (item.budget - item.spentMoney).toFixed(2),
+          percent: ((item.budget - item.spentMoney) / item.budget) * 100,
+          isWarn: (item.budget - item.spentMoney - item.warnMoney) > 0 ? 0 : 1
         }
       })
     }

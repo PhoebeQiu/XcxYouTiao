@@ -184,12 +184,7 @@ export default {
 
   methods: {
     initState () {
-      // this.feeDesc = ''
-      // this.feeType = ''
-      // this.feeMoney = ''
-      // this.budgetInput[0].msg = ''
-      // this.budgetInput[0].dotStatus = '1'
-      // this.budgetInput[0].placeholderMsg = '¥ 0.00'
+      this.budgetClassification = 0
     },
 
     changeClassificationStatus (options) {
@@ -238,6 +233,16 @@ export default {
       if (validotrMsg) {
         return
       }
+      // 预算金额 > 提示金额
+      if ((this.budgetMoney - this.budgetTipMoney) < 0) {
+        console.log('this.budgetMoney', this.budgetMoney)
+        console.log('this.budgetTipMoney', this.budgetTipMoney)
+        wx.showToast({
+          title: `提示金额不能超过预算金额`,
+          icon: 'none'
+        })
+        return
+      }
       // 开始时间 < 结束时间
       let startTime = this.budgetStartTime
       let endTime = this.budgetEndTime
@@ -250,19 +255,80 @@ export default {
         })
         return
       }
-      // 得到时分秒
-      const Second = new Date()
-      const SecondTime = this.$time.formatTime(Second)
-      const tmpStartTime = `${this.budgetStartTime} ${SecondTime}`
-      const tmpEndTime = `${this.budgetEndTime} ${SecondTime}`
+      // 把时间转化为时间戳
+      const tmpStartTime = `${this.budgetStartTime} 00:00:00`
+      const tmpEndTime = `${this.budgetEndTime} 00:00:00`
+      console.log('tmpStartTime', tmpStartTime)
+      console.log('tmpEndTime', tmpEndTime)
       // 时间转化为时间戳
       let startDate = this.$time.turnTimeStamp(tmpStartTime)
       let endDate = this.$time.turnTimeStamp(tmpEndTime)
-      // 校验：如果预算为总预算，判断数据库里是否已存在总预算//判断该总预算的金额是否有超过该月份的分类预算金额
-      // 。。。
-      // 校验：如果预算为分类预算，判断该分类预算的金额是否超过该月份的总预算金额
-      // 。。。
       // 发起请求
+      if (this.budgetClassification === 9) {
+        // 添加总预算
+        const data = {
+          accountBookId: this.accountBook.id,
+          totalBudget: this.budgetMoney,
+          warnMoney: this.budgetTipMoney,
+          beginTime: startDate,
+          endTime: endDate
+        }
+        console.log('添加总预算data', data)
+        let res = await this.$api.budget.addTotalBudget(data)
+        if (res.errCode === 103) {
+          wx.showToast({
+            title: `该账本存在总预算`,
+            icon: 'none'
+          })
+          return
+        }
+        if (res.orror) {
+          return
+        }
+        console.log('添加总预算res', res)
+        let type = 8
+        wx.navigateTo({
+          url: `../successPage/main?type=${type}`
+        })
+      }
+      if (this.budgetClassification !== 9) {
+        // 判断预算是否只剩下总预算
+        const data = {
+          accountBookId: this.accountBook.id,
+          pageNum: 1,
+          pageSize: 10
+        }
+        let res = await this.$api.budget.getAllBudgetList(data)
+        if (res.errCode) {
+          return
+        }
+        console.log('一共多少个预算', res.data.result.length)
+        if (res.data.result.length === 1) {
+          this.add()
+        } else {
+          wx.showModal({
+            title: '添加分类预算',
+            content: '添加分类预算的同时，会添加一样的总预算，是否仍要添加？',
+            success: (res) => {
+              if (res.confirm) {
+                this.add()
+              }
+            }
+          })
+        }
+      }
+    },
+
+    async add () {
+      // 把时间转化为时间戳
+      const tmpStartTime = `${this.budgetStartTime} 00:00:00`
+      const tmpEndTime = `${this.budgetEndTime} 00:00:00`
+      console.log('tmpStartTime', tmpStartTime)
+      console.log('tmpEndTime', tmpEndTime)
+      // 时间转化为时间戳
+      let startDate = this.$time.turnTimeStamp(tmpStartTime)
+      let endDate = this.$time.turnTimeStamp(tmpEndTime)
+      // 添加分类预算
       const data = {
         accountBookId: this.accountBook.id,
         classification: this.budgetClassification,
@@ -271,15 +337,31 @@ export default {
         beginTime: startDate,
         endTime: endDate
       }
-      console.log('添加预算data', data)
+      console.log('添加分类预算data', data)
       let res = await this.$api.budget.addBudget(data)
-      if (res.errCode) {
+      if (res.errCode === 101) {
+        wx.showToast({
+          title: `预算金额超過总预算`,
+          icon: 'none'
+        })
+        return
+      } else if (res.errCode === 102) {
+        wx.showToast({
+          title: `开始与结束时间不位于总预算時間区间内`,
+          icon: 'none'
+        })
+        return
+      } else if (res.errCode === 104) {
+        wx.showToast({
+          title: `与该种类的预算有时间重叠`,
+          icon: 'none'
+        })
         return
       }
       if (res.orror) {
         return
       }
-      console.log('添加预算res', res)
+      console.log('添加分类预算res', res)
       let type = 8
       wx.navigateTo({
         url: `../successPage/main?type=${type}`

@@ -7,9 +7,9 @@
         <span v-if="item.classification !== 9" class="item_type">{{ enpenseType[item.classification] }}</span>
         <p class="item_time">{{ item.beginTime }}--{{ item.endTime }}</p>
         <div class="progress">
-          <progress stroke-width="40rpx" border-radius="25rpx" backgroundColor="#eeeeee"
-          :activeColor="item.classification === 9 ? '#de6f6f' : '#ffdeb3'" :percent="item.percent" />
-          <div class="overMoney">剩余：{{ item.item }}</div>
+          <progress stroke-width="40rpx" border-radius="25rpx" backgroundColor="#dbdbdb"
+          :activeColor="item.isWarn === 1 ? '#de6f6f' : '#ffdeb3'" :percent="item.percent" />
+          <div class="overMoney">剩余：{{ item.remainMoney }}</div>
         </div>
         <div class="item_money">
           <p class="item_money_out">已花：<span>{{ item.spentMoney }}</span></p>
@@ -46,19 +46,16 @@ export default {
 
     toBudgetInfo (index) {
       let budgetInfo = this.budgetItem[index]
-      // const feeInfo = {
-      //   id: res.data.id,
-      //   budgetId: res.data.budgetId,
-      //   classification: res.data.classification,
-      //   description: res.data.description,
-      //   expenseDate: res.data.expenseDate,
-      //   expenses: res.data.expenses,
-      //   type: res.data.type
-      // }
       this.vuexSetBudgetInfo(budgetInfo)
-      wx.navigateTo({
-        url: `../budgetInfo/main`
-      })
+      if (budgetInfo.classification === 9) {
+        wx.navigateTo({
+          url: `../totalBudgetInfo/main`
+        })
+      } else {
+        wx.navigateTo({
+          url: `../budgetInfo/main`
+        })
+      }
     }
   },
 
@@ -83,11 +80,11 @@ export default {
   text-align: center;
   font-size: 34rpx;
   letter-spacing: 0.2rpx;
-  margin: 30rpx 0;
+  margin-top: 30rpx;
+  margin-bottom: 10rpx;
 }
 .item_type {
   font-size: 30rpx;
-  margin-top: 10rpx;
 }
 .item_time {
   font-size: 30rpx;

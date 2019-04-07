@@ -7,7 +7,7 @@
         <image v-if="item.openHistory === 1" class="account_sign" src="../../static/images/ic_sign.png" mode='aspectFill'/>
         <div class="account_name">{{ item.name }}</div>
       </div>
-      <div class="account_add" @click="toAddAccount">
+      <div v-if="accountItem" class="account_add" @click="toAddAccount">
         <div class="account_name">添加账本</div>
       </div>
       <div v-if="emptyAccount" class="account_empty"></div>

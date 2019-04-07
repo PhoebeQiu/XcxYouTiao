@@ -38,8 +38,7 @@
 <script>
 import WTabBar from '@/components/TabBar'
 import {
-  mapGetters,
-  mapActions
+  mapGetters
 } from 'vuex'
 
 export default {
@@ -64,40 +63,19 @@ export default {
   },
 
   methods: {
-    ...mapActions('user', [
-      'vuexSetUserInfo'
-    ]),
 
     toUserInfo () {
       wx.navigateTo({
         url: `../userInfo/main`
       })
-    },
-
-    async getCustomer () {
-      let wxUserInfo = this.userInfo
-      // 请求：获取用户信息
-      const data = {}
-      const res = await this.$api.auth.getCustomer(data)
-      if (res.errCode) {
-        return
-      }
-      console.log('获取用户信息', res.data)
-      const userData = {
-        name: res.data.name,
-        realName: res.data.realName,
-        phone: res.data.phone,
-        signature: res.data.signature,
-        avatarUrl: wxUserInfo.avatarUrl,
-        wxName: wxUserInfo.wxName
-      }
-      this.vuexSetUserInfo(userData)
     }
   },
 
   onShow () {
     wx.hideTabBar()
-    this.getCustomer()
+  },
+
+  onLoad () {
   }
 }
 </script>

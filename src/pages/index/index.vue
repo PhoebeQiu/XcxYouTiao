@@ -35,7 +35,8 @@
 
 <script>
 import {
-  mapGetters
+  mapGetters,
+  mapActions
 } from 'vuex'
 import WTabBar from '@/components/TabBar'
 import FeeCard from '@/components/fee/FeeCard'
@@ -63,14 +64,26 @@ export default {
       'vuexGetAccountBook'
     ]),
 
+    ...mapGetters('user', [
+      'vuexGetUserInfo'
+    ]),
+
     // 获取数据
     accountBook () {
       let accountBook = this.vuexGetAccountBook
       return accountBook
+    },
+
+    userInfo () {
+      let userInfo = this.vuexGetUserInfo
+      return userInfo
     }
   },
 
   methods: {
+    ...mapActions('user', [
+      'vuexSetUserInfo'
+    ]),
 
     toAccount () {
       wx.navigateTo({
@@ -133,6 +146,27 @@ export default {
         }
       }
       this.feeItem = feeData
+    },
+
+    async getCustomer () {
+      let wxUserInfo = this.userInfo
+      // 请求：获取用户信息
+      const data = {}
+      const res = await this.$api.auth.getCustomer(data)
+      if (res.errCode) {
+        return
+      }
+      const userData = {
+        id: res.data.id,
+        name: res.data.name,
+        realName: res.data.realName,
+        phone: res.data.phone,
+        signature: res.data.signature,
+        avatarUrl: wxUserInfo.avatarUrl,
+        wxName: wxUserInfo.wxName
+      }
+      console.log('vuex用户信息', userData)
+      this.vuexSetUserInfo(userData)
     },
 
     async getFeeTotal () {
@@ -206,6 +240,7 @@ export default {
   },
 
   onLoad () {
+    this.getCustomer()
   }
 
 }

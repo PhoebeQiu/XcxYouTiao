@@ -63,6 +63,14 @@
               ref="echarts" disableTouch canvasId="chartMoon"
               />
           </div>
+          <div class="export">
+            <image @click="exportExcel" class="export_excel" src="../../static/images/ic_excel.png" mode='aspectFill'/>
+            <label for="share">
+              <image class="export_share" src="../../static/images/ic_share.png" mode='aspectFill'/>
+            </label>
+            <button class="btn" id="share" open-type="share">
+            </button>
+          </div>
         </div>
       </div>
       <div v-if="ChartsType === 1">
@@ -277,11 +285,31 @@ export default {
       'vuexGetAccountBook'
     ]),
 
+    ...mapGetters('user', [
+      'vuexGetUserInfo'
+    ]),
+
+    // 获取userInfo数据
+    userInfo () {
+      let userInfo = this.vuexGetUserInfo
+      return userInfo
+    },
+
     // 获取userInfo数据
     accountBook () {
       let accountBook = this.vuexGetAccountBook
       return accountBook
     }
+  },
+
+  onShareAppMessage: function () {
+    let userInfo = JSON.stringify(this.userInfo)
+    const t = {
+      title: `${this.userInfo.wxName}分享了费用报表`,
+      path: `/pages/shareChart/main?&accountBookId=${this.accountBook.id}&userInfo=${userInfo}&year=${this.year}&month=${this.month}&indexTypePicker=${this.indexTypePicker}`,
+      imageUrl: '../../static/images/ic_bground.png'
+    }
+    return t
   },
 
   methods: {
@@ -660,6 +688,76 @@ export default {
       }
     },
 
+    // 导出Excel文件
+    async exportExcel () {
+      // 处理时间
+      const dateTmp = new Date()
+      let y = this.year
+      let m = this.month
+      if (m === 0) {
+        m = dateTmp.getMonth() + 1
+        m = m < 10 ? ('0' + m) : m
+      }
+      let d = dateTmp.getDate()
+      d = d < 10 ? ('0' + d) : d
+      const Second = new Date()
+      const SecondTime = this.$time.formatTime(Second)
+      const time = `${y}-${m}-${d} ${SecondTime}`
+      let date = this.$time.turnTimeStamp(time)
+      // 处理 年/月报表
+      let intervalTmp = this.indexTypePicker
+      if (intervalTmp === 0) {
+        intervalTmp = 2
+      } else if (intervalTmp === 1) {
+        intervalTmp = 1
+      }
+      // http://192.168.8.39:9090
+      // http://120.77.86.76:9090
+      let url = 'http://192.168.8.39:9090/expenses/exportExcel?accountBookId=' +
+      this.accountBook.id + '&date=' + date + '&interval=' + intervalTmp
+      wx.downloadFile({
+        url: url,
+        header: {
+          'content-type': 'application/json',
+          'token': wx.getStorageSync('token')
+        },
+        success: (res) => {
+          console.log('下载res', res)
+          if (res.statusCode === 200) {
+            console.log('文件下载后地址', res.tempFilePath)
+            wx.saveFile({
+              tempFilePath: res.tempFilePath,
+              success: (res) => {
+                console.log('保存res', res)
+                var savedFilePath = res.savedFilePath
+                console.log('文件已下载到' + savedFilePath)
+                // 查看下载的文件列表
+                wx.getSavedFileList({
+                  success: (res) => {
+                    console.log('查看文件列表res', res.fileList)
+                  }
+                })
+                // 打开文档
+                wx.openDocument({
+                  filePath: savedFilePath,
+                  fileType: 'xlsx',
+                  success: (res) => {
+                    console.log('打开文档成功', res)
+                  },
+                  fail: (res) => {
+                    console.log('打开文档失败', res)
+                  }
+                })
+              }
+            })
+          }
+        },
+        fail: (res) => {
+          console.log('文件下载失败res', res)
+        }
+      })
+    },
+
     setTime () {
       const date = new Date()
       let y = date.getFullYear()
@@ -760,19 +858,20 @@ export default {
   box-shadow: 0 32rpx 64rpx -32rpx rgba(0, 0, 0, 0.1);
   border: 2rpx solid #eeeeee;
   margin: 10rpx 0;
+  position: relative;
 }
 .no_chart {
   line-height: 600rpx;
   font-size: 34rpx;
   color: #b2b2b2;
 }
-.moonChart {
+.moon {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
-.brokenChart {
+.broken {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -818,6 +917,19 @@ export default {
   height: 460rpx;
   justify-content: center;
   align-items: center;
+}
+.export {
+  position: absolute;
+  bottom: 0%;
+  right: 2%;
+}
+.export_share, .export_excel {
+  width: 48rpx;
+  height: 48rpx;
+}
+.export_share {
+  margin-left: 20rpx;
+  /* margin-bottom: 2rpx; */
 }
 
 .datail {

@@ -121,6 +121,7 @@ export default {
         { strategy: 'isEmpty', error: '请填写用户名称' }
       ])
       validotr.addRule(this.phone, [
+        { strategy: 'isEmpty', error: '请填写手机号码' },
         { strategy: 'isPhone', error: '请填写正确的手机号码' }
       ])
       return validotr.check()

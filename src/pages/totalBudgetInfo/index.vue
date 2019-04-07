@@ -1,3 +1,4 @@
+
 <template>
   <div class="contain">
 
@@ -170,17 +171,27 @@ export default {
       'vuexGetBudgetInfo'
     ]),
 
+    ...mapGetters('accountBook', [
+      'vuexGetAccountBook'
+    ]),
+
     // 获取数据
     budgetInfo () {
       let budgetInfo = this.vuexGetBudgetInfo
       return budgetInfo
+    },
+
+    // 获取数据
+    accountBook () {
+      let accountBook = this.vuexGetAccountBook
+      return accountBook
     }
   },
 
   components: {
     WInput,
-    FeeSort,
     WButton,
+    FeeSort,
     WSelectTime
   },
 
@@ -246,6 +257,14 @@ export default {
       if (validotrMsg) {
         return
       }
+      //  预算类型必须为总预算
+      if (this.budgetClassification !== 9) {
+        wx.showToast({
+          title: `不可修改总预算类型`,
+          icon: 'none'
+        })
+        return
+      }
       // 开始时间 < 结束时间
       let startTime = this.budgetStartTime
       let endTime = this.budgetEndTime
@@ -267,25 +286,27 @@ export default {
       // 发起请求
       const data = {
         id: this.budgetInfo.id,
-        classification: this.budgetClassification,
-        budget: this.budgetMoney,
+        totalBudget: this.budgetMoney,
         warnMoney: this.budgetTipMoney,
         beginTime: startDate,
         endTime: endDate
       }
-      console.log('更新分类预算data', data)
-      let res = await this.$api.budget.updateBudget(data)
-      console.log('更新分类预算res', res)
-      if (res.errCode) {
+      console.log('更新总预算data', data)
+      let res = await this.$api.budget.updateTotalBudget(data)
+      console.log('更新总预算res', res)
+      if (res.errCode === 106) {
+        wx.showToast({
+          title: `预算开始时间过高`,
+          icon: 'none'
+        })
+        return
+      } else if (res.errCode === 107) {
+        wx.showToast({
+          title: `预算结束时间过低`,
+          icon: 'none'
+        })
         return
       }
-      // if (res.errCode === 103) {
-      //   wx.showToast({
-      //     title: `该账本存在总预算`,
-      //     icon: 'none'
-      //   })
-      //   return
-      // }
       let type = 9
       wx.navigateTo({
         url: `../successPage/main?type=${type}`
@@ -293,14 +314,41 @@ export default {
     },
 
     async deleteBudget () {
+      // 判断预算是否只剩下总预算
       const data = {
-        id: this.budgetInfo.id
+        accountBookId: this.accountBook.id,
+        pageNum: 1,
+        pageSize: 10
       }
-      let res = await this.$api.budget.daleteBudget(data)
+      let res = await this.$api.budget.getAllBudgetList(data)
       if (res.errCode) {
         return
       }
-      console.log('删除分类预算res', res)
+      console.log('一共多少个预算', res.data.result.length)
+      if (res.data.result.length === 1) {
+        this.delete()
+      } else {
+        wx.showModal({
+          title: '删除总预算',
+          content: '将删除所有预算，是否仍要删除？',
+          success: (res) => {
+            if (res.confirm) {
+              this.delete()
+            }
+          }
+        })
+      }
+    },
+
+    async delete () {
+      const data = {
+        id: this.budgetInfo.id
+      }
+      let res = await this.$api.budget.deleteTotalBudgetById(data)
+      if (res.errCode) {
+        return
+      }
+      console.log('删除总预算res', res)
       let type = 10
       wx.navigateTo({
         url: `../successPage/main?type=${type}`

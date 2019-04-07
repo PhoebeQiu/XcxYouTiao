@@ -14,8 +14,10 @@
     "pages/feeInfo/main",
     "pages/addBudget/main",
     "pages/budgetInfo/main",
+    "pages/totalBudgetInfo/main",
     "pages/budget/main",
-    "pages/successPage/main"
+    "pages/successPage/main",
+    "pages/shareChart/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

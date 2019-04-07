@@ -215,15 +215,34 @@ export default {
         data
       }
       return request(params)
+    },
+
+    exportExcel (data) {
+      const params = {
+        path: `/expenses/exportExcel`,
+        method: 'POST',
+        data
+      }
+      return request(params)
     }
   },
 
   // 预算
   budget: {
-    // 添加预算
+    // 添加分类预算
     addBudget (data) {
       const params = {
         path: `/budget/addBudget`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 添加总预算
+    addTotalBudget (data) {
+      const params = {
+        path: `/budget/addTotalBudget`,
         method: 'POST',
         data
       }
@@ -250,7 +269,7 @@ export default {
       return request(params)
     },
 
-    // 更新预算
+    // 更新分类预算
     updateBudget (data) {
       const params = {
         path: `/budget/updateBudget`,
@@ -260,10 +279,30 @@ export default {
       return request(params)
     },
 
+    // 更新总预算
+    updateTotalBudget (data) {
+      const params = {
+        path: `/budget/updateTotalBudget`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
     // 删除预算
     daleteBudget (data) {
       const params = {
         path: `/budget/deleteBudgetById`,
+        method: 'DELETE',
+        data
+      }
+      return request(params)
+    },
+
+    // 删除预算
+    deleteTotalBudgetById (data) {
+      const params = {
+        path: `/budget/deleteTotalBudgetById`,
         method: 'DELETE',
         data
       }
