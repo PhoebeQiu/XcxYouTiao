@@ -99,6 +99,31 @@ export default {
         this.btnRight = '预算管理'
         this.backStatus = 1
       }
+      if (type === '11') {
+        this.title = '添加记账提醒成功'
+        this.btnLeft = '继续添加'
+        this.btnRight = '记账提醒管理'
+      }
+      if (type === '12') {
+        this.title = '修改记账提醒成功'
+        this.btnLeft = '继续修改'
+        this.btnRight = '记账提醒管理'
+      }
+      if (type === '13') {
+        this.title = '删除记账提醒成功'
+        this.btnRight = '记账提醒管理'
+        this.backStatus = 1
+      }
+      if (type === '14') {
+        this.title = '用户注册成功'
+        this.btnRight = '前往登录'
+        this.backStatus = 1
+      }
+      if (type === '15') {
+        this.title = '用户登录成功'
+        this.btnRight = '前往首页'
+        this.backStatus = 1
+      }
       // 预留
       if (type === '112') {
         // this.title = '客户添加成功'
@@ -131,6 +156,10 @@ export default {
       } else if (type === '5') {
         wx.switchTab({
           url: `../index/main`
+        })
+      } else if (type === '15') {
+        wx.redirectTo({
+          url: `../account/main`
         })
       } else {
         wx.navigateBack({

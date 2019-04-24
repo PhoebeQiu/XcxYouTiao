@@ -1,5 +1,5 @@
 <template>
-  <div class="contain">
+  <div :class="[ AppIsIpx ? 'isx-wrap' : 'wrap']">
 
     <div :class="['bar', tab === 'index' ? 'bar-box' : '']" @click="changeBar('index')">
       <image class="img" src="../../static/images/ic_index.png" mode='aspectFill'/>
@@ -41,13 +41,26 @@ export default {
 </script>
 
 <style scoped>
-.contain {
+.wrap {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
   height: 120rpx;
+  z-index: 9999;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #de6f6f;
+}
+.isx-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 160rpx;
   z-index: 9999;
   display: flex;
   flex-direction: row;

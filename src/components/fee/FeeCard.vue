@@ -140,11 +140,31 @@ export default {
     // 得到最近几天的时间列表
     getWeekTime () {
       const date = new Date()
-      const month = date.getMonth() + 1
+      let month = date.getMonth() + 1
       for (let i = 0; i < 7; i++) {
         let day = date.getDate() - i
-        let temp = `${month}月${day}号`
-        this.dayItem.push(temp)
+        // 处理月初情况
+        if (day <= 0) {
+          let monthTmp = month - 1
+          let dayTmp = day
+          switch (monthTmp) {
+            case 2:
+              dayTmp = 28
+              break
+            case 4: case 6: case 9: case 11:
+              dayTmp = 30
+              break
+            default:
+              dayTmp = 30
+              break
+          }
+          dayTmp = dayTmp + day
+          let temp = `${monthTmp}月${dayTmp}号`
+          this.dayItem.push(temp)
+        } else {
+          let temp = `${month}月${day}号`
+          this.dayItem.push(temp)
+        }
       }
     },
 
@@ -199,6 +219,7 @@ export default {
 
 .line {
   height: 2rpx;
+  opacity: 0.8;
   background-color: #eeeeee;
   border-radius: 6rpx;
   margin-top: 12rpx;
@@ -271,6 +292,7 @@ export default {
   top: 0%;
   width: 500rpx;
   height: 2rpx;
+  opacity: 0.8;
   background-color: #eee;
   border-radius: 5rpx;
 }

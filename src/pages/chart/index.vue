@@ -30,79 +30,83 @@
 
     <div class="chart">
       <div v-if="ChartsType === 0">
-        <p v-if="chartsData.length === 0" class="no_chart">这段时间没有记录任何费用~</p>
-        <div v-if="chartsData.length !== 0" class="moon">
-          <div class="chartOption">
-            <div class="chartOption_item" @click="changeInOutType(0)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutType === 0 ? 'chartOption_item_red' : ''">总支出</span>
-                <p :class="inOutType === 0 ? 'chartOption_item_red' : ''">{{ totalOutExpenses }}</p>
-              </div>
-            </div>
-            <div class="chartOption_item" @click="changeInOutType(1)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutType === 1 ? 'chartOption_item_red' : ''">总收入</span>
-                <p :class="inOutType === 1 ? 'chartOption_item_red' : ''">{{ totalInExpenses }}</p>
-              </div>
-            </div>
-            <div class="chartOption_item" @click="changeInOutType(2)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutType === 2 ? 'chartOption_item_red' : ''">总结余</span>
-                <p :class="inOutType === 2 ? 'chartOption_item_red' : ''">{{ surplus }}</p>
-              </div>
+        <div class="chartOption">
+          <div class="chartOption_item" @click="changeInOutType(0)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutType === 0 ? 'chartOption_item_red' : ''">总支出</span>
+              <p :class="inOutType === 0 ? 'chartOption_item_red' : ''">{{ totalOutExpenses }}</p>
             </div>
           </div>
-          <div class="echarts-wrap">
-            <mpvue-echarts :echarts="echarts" :onInit="initChart"
-              ref="echarts" disableTouch canvasId="chartMoon"
-              />
+          <div class="chartOption_item" @click="changeInOutType(1)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutType === 1 ? 'chartOption_item_red' : ''">总收入</span>
+              <p :class="inOutType === 1 ? 'chartOption_item_red' : ''">{{ totalInExpenses }}</p>
+            </div>
           </div>
-          <div class="export">
-            <image @click="exportExcel" class="export_excel" src="../../static/images/ic_excel.png" mode='aspectFill'/>
-            <label for="share">
-              <image class="export_share" src="../../static/images/ic_share.png" mode='aspectFill'/>
-            </label>
-            <button class="btn" id="share" open-type="share">
-            </button>
+          <div class="chartOption_item" @click="changeInOutType(2)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutType === 2 ? 'chartOption_item_red' : ''">总结余</span>
+              <p :class="inOutType === 2 ? 'chartOption_item_red' : ''">{{ surplus }}</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p v-if="chartsData.length === 0" class="no_chart">没有记录任何费用~</p>
+          <div v-if="chartsData.length !== 0" class="moon">
+            <div class="echarts-wrap">
+              <mpvue-echarts :echarts="echarts" :onInit="initChart"
+                ref="echarts" disableTouch canvasId="chartMoon"
+                />
+            </div>
+            <div class="export">
+              <image @click="exportExcel" class="export_excel" src="../../static/images/ic_excel.png" mode='aspectFill'/>
+              <label for="share">
+                <image class="export_share" src="../../static/images/ic_share.png" mode='aspectFill'/>
+              </label>
+              <button class="btn" id="share" open-type="share">
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <div v-if="ChartsType === 1">
-        <p v-if="brokenChartsData.length === 0" class="no_chart">这段时间没有记录任何费用~</p>
-        <div v-if="brokenChartsData.length !== 0" class="broken">
-          <div class="chartOption">
-            <div class="chartOption_item" @click="changeBrokenInOutType(0)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutBrokenType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutBrokenType === 0 ? 'chartOption_item_red' : ''">总支出</span>
-              </div>
-            </div>
-            <div class="chartOption_item" @click="changeBrokenInOutType(1)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutBrokenType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutBrokenType === 1 ? 'chartOption_item_red' : ''">总收入</span>
-              </div>
-            </div>
-            <div class="chartOption_item" @click="changeBrokenInOutType(2)">
-              <image class="chartOption_item_img" mode='aspectFill'
-              :src="inOutBrokenType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
-              <div class="chartOption_item_write">
-                <span :class="inOutBrokenType === 2 ? 'chartOption_item_red' : ''">总结余</span>
-              </div>
+        <div class="chartOption">
+          <div class="chartOption_item" @click="changeBrokenInOutType(0)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutBrokenType === 0 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutBrokenType === 0 ? 'chartOption_item_red' : ''">总支出</span>
             </div>
           </div>
-          <div class="echarts-wrap">
-            <mpvue-echarts :echarts="echarts" :onInit="initBrokenChart"
-              ref="echarts" canvasId="chartBroken"
-              />
+          <div class="chartOption_item" @click="changeBrokenInOutType(1)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutBrokenType === 1 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutBrokenType === 1 ? 'chartOption_item_red' : ''">总收入</span>
+            </div>
+          </div>
+          <div class="chartOption_item" @click="changeBrokenInOutType(2)">
+            <image class="chartOption_item_img" mode='aspectFill'
+            :src="inOutBrokenType === 2 ? '../../static/images/ic_selected.png' : '../../static/images/ic_select.png'" />
+            <div class="chartOption_item_write">
+              <span :class="inOutBrokenType === 2 ? 'chartOption_item_red' : ''">总结余</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p v-if="brokenChartsData.length === 0" class="no_chart">没有记录任何费用~</p>
+          <div v-if="brokenChartsData.length !== 0" class="broken">
+            <div class="echarts-wrap">
+              <mpvue-echarts :echarts="echarts" :onInit="initBrokenChart"
+                ref="echarts" canvasId="chartBroken"
+                />
+            </div>
           </div>
         </div>
       </div>
@@ -438,7 +442,7 @@ export default {
         }
       })
       // 总结余
-      if (this.totalInExpenses !== 0 && this.totalOutExpenses !== 0) {
+      if (this.totalInExpenses !== 0 || this.totalOutExpenses !== 0) {
         this.chartsSurplusData = [
           { value: this.totalInExpenses, name: '总收入' },
           { value: this.totalOutExpenses, name: '总支出' }
@@ -447,14 +451,14 @@ export default {
           {
             value: this.$wxApi.toMoney(this.totalInExpenses),
             percent: ((this.totalInExpenses / (this.totalInExpenses + this.totalOutExpenses)) * 100).toFixed(2) + '%',
-            name: this.inOutFeeSort[0].title,
-            img: this.inOutFeeSort[0].fee_img
+            name: this.inOutFeeSort[1].title,
+            img: this.inOutFeeSort[1].fee_img
           },
           {
             value: this.$wxApi.toMoney(this.totalOutExpenses),
             percent: ((this.totalOutExpenses / (this.totalInExpenses + this.totalOutExpenses)) * 100).toFixed(2) + '%',
-            name: this.inOutFeeSort[1].title,
-            img: this.inOutFeeSort[1].fee_img
+            name: this.inOutFeeSort[0].title,
+            img: this.inOutFeeSort[0].fee_img
           }
         ]
       } else {
@@ -623,7 +627,6 @@ export default {
         this.brokenChartsDate = []
         this.getFeeChart()
       } else if (typeStatus === 1) {
-        console.log('折线图')
         this.chartsData = []
         this.getBrokenFeeChart()
       }
@@ -635,19 +638,19 @@ export default {
         this.indexTypePicker = 0
         const date = new Date()
         this.month = date.getMonth() + 1
+        this.brokenInterval = 2
         if (this.ChartsType === 0) {
           this.getFeeChart()
         } else if (this.ChartsType === 1) {
-          this.brokenInterval = 2
           this.getBrokenFeeChart()
         }
       } else if (e.mp.detail.value === '1') {
         this.indexTypePicker = 1
         this.month = 0
+        this.brokenInterval = 1
         if (this.ChartsType === 0) {
           this.getFeeChart()
         } else if (this.ChartsType === 1) {
-          this.brokenInterval = 1
           this.getBrokenFeeChart()
         }
       }
@@ -713,7 +716,7 @@ export default {
       }
       // http://192.168.8.39:9090
       // http://120.77.86.76:9090
-      let url = 'http://192.168.8.39:9090/expenses/exportExcel?accountBookId=' +
+      let url = 'http://120.77.86.76:9090/expenses/exportExcel?accountBookId=' +
       this.accountBook.id + '&date=' + date + '&interval=' + intervalTmp
       wx.downloadFile({
         url: url,
@@ -861,7 +864,8 @@ export default {
   position: relative;
 }
 .no_chart {
-  line-height: 600rpx;
+  line-height: 460rpx;
+  text-align: center;
   font-size: 34rpx;
   color: #b2b2b2;
 }

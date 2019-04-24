@@ -193,6 +193,10 @@ export default {
     }
   },
 
+  onShow () {
+    this.getDayFee()
+  },
+
   onLoad: function () {
     const Second = new Date()
     const aTime = this.$time.getTime(Second)

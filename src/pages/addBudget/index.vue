@@ -4,7 +4,7 @@
     <div class="budget_sort">
       <div class="budget_sort_title">
         <span class="dot_r"></span>
-        <p>预算类别</p>
+        <p>预算分类</p>
       </div>
       <div class="aline"></div>
       <FeeSort :feeSort="outBudgetSort" :feeStatus="budgetStatus" :feeNullItem="1"
@@ -28,7 +28,7 @@
 
     <div class="btn">
       <div @click="addBudget">
-        <WButton text="保存" size="big_btn" bgstyle="bgcolor_red" />
+        <WButton text="添加" size="big_btn" bgstyle="bgcolor_red" />
       </div>
     </div>
 
@@ -303,7 +303,7 @@ export default {
           return
         }
         console.log('一共多少个预算', res.data.result.length)
-        if (res.data.result.length === 1) {
+        if (res.data.result.length !== 0) {
           this.add()
         } else {
           wx.showModal({

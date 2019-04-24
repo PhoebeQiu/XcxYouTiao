@@ -82,11 +82,12 @@ export default {
   },
 
   onShow () {
-    const tmpToken = this.getToken()
-    if (tmpToken) {
-      // 请求：账本数据
-      this.getAccount()
-    }
+    // const tmpToken = this.getToken()
+    // if (tmpToken) {
+    //   // 请求：账本数据
+    //   this.getAccount()
+    // }
+    this.getAccount()
   },
 
   onUnload () {

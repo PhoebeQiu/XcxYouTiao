@@ -2,7 +2,7 @@
 <template>
   <div class="contain">
 
-    <div class="budget_sort">
+    <!-- <div class="budget_sort">
       <div class="budget_sort_title">
         <span class="dot_r"></span>
         <p>预算类别</p>
@@ -10,7 +10,7 @@
       <div class="aline"></div>
       <FeeSort :feeSort="outBudgetSort" :feeStatus="budgetStatus" :feeNullItem="1"
         @changeClassificationStatus="changeClassificationStatus"/>
-    </div>
+    </div> -->
 
     <div class="budget_money">
       <WInput :post="budgetInput[0]" @setInputValue="setInputValue"/>

@@ -17,7 +17,12 @@
     "pages/totalBudgetInfo/main",
     "pages/budget/main",
     "pages/successPage/main",
-    "pages/shareChart/main"
+    "pages/shareChart/main",
+    "pages/clock/main",
+    "pages/addClock/main",
+    "pages/clockInfo/main",
+    "pages/register/main",
+    "pages/accountLogin/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -5,8 +5,8 @@
       <span :class="[ status === 0 ? 'item-border' : 'item-border-c']"></span>
     </div>
     <div class="title-item" @click="changeStatus(1)">
-      <span :class="[ status === 1 ? 'title-text' : '']">支出</span>
-      <span :class="[ status === 1 ? 'item-border' : 'item-border-c']"></span>
+      <span :class="[ status === 1 ? 'title-text1' : '']">支出</span>
+      <span :class="[ status === 1 ? 'item-border1' : 'item-border-c']"></span>
     </div>
   </div>
 </template>
@@ -73,6 +73,9 @@ export default {
 .title-text {
   color: #e07a7a;
 }
+.title-text1 {
+  color: #ffdeb3;
+}
 
 .item-border {
   width: 160rpx;
@@ -82,6 +85,15 @@ export default {
   margin-top: 6rpx;
   transition: all .5s ease;
 }
+.item-border1 {
+  width: 160rpx;
+  height: 4rpx;
+  background-color: #ffdeb3;
+  border-radius: 2rpx;
+  margin-top: 6rpx;
+  transition: all .5s ease;
+}
+
 .item-border-c {
   width: 160rpx;
   height: 4rpx;

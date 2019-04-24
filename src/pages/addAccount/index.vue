@@ -109,11 +109,11 @@ export default {
     }
   },
 
-  onLoad: function () {
+  onLoad () {
+    wx.setStorageSync('colorId', this.select.colorId)
   },
 
   onShow () {
-    wx.setStorageSync('colorId', this.select.colorId)
     let colorId = wx.getStorageSync('colorId')
     console.log('onShow', colorId)
     if (colorId) {
@@ -121,7 +121,7 @@ export default {
     }
   },
 
-  onUnload: function () {
+  onUnload () {
     this.initState()
   },
 

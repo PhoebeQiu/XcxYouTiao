@@ -2,7 +2,7 @@
   <div class="contain">
 
     <div class="user">
-      <image class="user_img" :src="userInfo.avatarUrl" mode="aspectFill" />
+      <image class="user_img" :src="userInfo.avatarFPath || userInfo.avatarUrl" mode="aspectFill" />
       <div class="user_detail">
         <p class="user_name">
           <span v-if="userInfo.name">{{ userInfo.name }}</span>
@@ -10,7 +10,7 @@
         </p>
         <p class="user_desc">
           <span v-if="userInfo.name">{{ userInfo.signature }}</span>
-          <span v-if="userInfo.name == ''">这个人没有留言哦</span>
+          <span v-if="userInfo.name == ''">这个人还没有个性签名哦</span>
         </p>
       </div>
     </div>
@@ -18,17 +18,18 @@
     <div class="content">
       <div class="item" @click="toUserInfo">
         <image class="item_ic" src="../../static/images/ic_user.png" mode="aspectFill" />
-        <p>账户</p>
+        <p>账户信息</p>
         <image class="item_arrow" src="../../static/images/ic_arrow.png" mode="aspectFill" />
       </div>
 
       <div class="line"></div>
 
-      <div class="item">
+      <div class="item" @click="toClock">
         <image class="item_ic" src="../../static/images/ic_vip.png" mode="aspectFill" />
-        <p>特权</p>
+        <p>记账提醒</p>
         <image class="item_arrow" src="../../static/images/ic_arrow.png" mode="aspectFill" />
       </div>
+
     </div>
 
     <WTabBar/>
@@ -68,6 +69,12 @@ export default {
       wx.navigateTo({
         url: `../userInfo/main`
       })
+    },
+
+    toClock () {
+      wx.navigateTo({
+        url: `../clock/main`
+      })
     }
   },
 
@@ -92,11 +99,12 @@ export default {
 .user {
   display: flex;
   justify-content: flex-start;
-  width: 690rpx;
+  /* width: 690rpx; */
   border-bottom: 2rpx solid #fcfcfc;
-  padding: 12rpx 0 0rpx 60rpx;
+  padding: 12rpx 0 60rpx 60rpx;
   /* margin: 30rpx 0 60rpx 0; */
-  margin: 60rpx 0 90rpx 0;
+  margin: 60rpx 30rpx 30rpx 30rpx;
+  box-shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.1);
 }
 .user_img {
   width: 96rpx;

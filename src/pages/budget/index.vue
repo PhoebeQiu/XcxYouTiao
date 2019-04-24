@@ -1,5 +1,5 @@
 <template>
-  <div class="contain">
+  <div class="'wrap">
     <div class="budget">
       <BudgetCard :budgetItem="budgetList" />
     </div>
@@ -7,6 +7,7 @@
     <div class="btn" @click="toAddBudget">
       <WButton text="添加预算" size="big_btn" bgstyle="bgcolor_red" />
     </div>
+    <div class="mask"></div>
   </div>
 </template>
 
@@ -99,11 +100,12 @@ export default {
 </script>
 
 <style scoped>
-.contain {
+.wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 
 .budget {
   width: 690rpx;
@@ -111,6 +113,7 @@ export default {
 }
 
 .btn {
+  z-index: 3;
   position: fixed;
   z-index: 9998;
   bottom: 68rpx;
@@ -122,5 +125,14 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+.mask {
+  z-index: 2;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100rpx;
+  background-color: white;
 }
 </style>

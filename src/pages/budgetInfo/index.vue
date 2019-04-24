@@ -7,7 +7,7 @@
         <p>预算类别</p>
       </div>
       <div class="aline"></div>
-      <FeeSort :feeSort="outBudgetSort" :feeStatus="budgetStatus" :feeNullItem="1"
+      <FeeSort :feeSort="outBudgetSort" :feeStatus="budgetStatus" :feeNullItem="0"
         @changeClassificationStatus="changeClassificationStatus"/>
     </div>
 
@@ -44,7 +44,8 @@ import {
 } from 'vuex'
 import WInput from '@/components/WInput'
 import WButton from '@/components/WButton'
-import FeeSort from '@/components/fee/FeeSort'
+import FeeSort from '@/components/fee/ClassFeeSort'
+// import FeeSort from '@/components/fee/FeeSort'
 import WSelectTime from '@/components/WSelectTime'
 
 export default {
@@ -121,14 +122,15 @@ export default {
           selectSpanStyle: 'fee_span_yellow',
           fee_img: '../../static/images/outcomeType/out_other.png',
           select_fee_img: '../../static/images/outcomeType/out_other_gray.png'
-        },
-        { num: 9,
-          title: '总预算',
-          selectImgStyle: 'fee_img_yellow',
-          selectSpanStyle: 'fee_span_yellow',
-          fee_img: '../../static/images/outcomeType/out_total.png',
-          select_fee_img: '../../static/images/outcomeType/out_total_gray.png'
         }
+        // ,
+        // { num: 9,
+        //   title: '总预算',
+        //   selectImgStyle: 'fee_img_yellow',
+        //   selectSpanStyle: 'fee_span_yellow',
+        //   fee_img: '../../static/images/outcomeType/out_total.png',
+        //   select_fee_img: '../../static/images/outcomeType/out_total_gray.png'
+        // }
       ],
       budgetInput: [
         {

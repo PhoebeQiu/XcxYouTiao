@@ -9,7 +9,7 @@
         </p>
         <div class="user_desc">
           <span v-if="indexTypePicker === 0">{{ year }}年{{ month }}月的报表</span>
-          <span v-if="indexTypePicker === 1">{{ month }}月的报表</span>
+          <span v-if="indexTypePicker === 1">{{ year }}年的报表</span>
         </div>
       </div>
     </div>

@@ -1,16 +1,22 @@
+
 <template>
   <div class="contain">
-    <class class="item" @click="toAccountColor">
+
+    <div class="item">
       <div class="item_l">
         <span v-if="post.dotStatus === '1'" class="dot_r"></span>
         <span v-if="post.dotStatus !== '1'" class="dot_y"></span>
         <p class="item_name">{{post.title}}</p>
       </div>
+
       <div class="item_r">
-        <div :class="[item_color, 'color'+post.colorId]"></div>
-        <image class="item_img" src="../../static/images/ic_arrow.png"/>
+        <picker mode="selector" :value="post.cycle" :range="cycleArray" @change="bindCycleChange">
+          {{ cycleArray[post.cycle] }}
+        </picker>
+        <image class="item_r_img" src="../../static/images/ic_bottom.png" mode='aspectFill'/>
       </div>
-    </class>
+    </div>
+
   </div>
 </template>
 
@@ -25,17 +31,36 @@ export default {
 
   data () {
     return {
-      // 固定
-      item_color: 'item_color'
+      dateMsg: '',
+      cycleArray: ['每天', '每周', '每月']
     }
   },
 
   methods: {
-    toAccountColor () {
-      wx.navigateTo({
-        url: `../accountColor/main`
-      })
+    bindCycleChange (e) {
+      let cycle = e.mp.detail.value
+      let options = {
+        type: this.post.type,
+        msg: cycle
+      }
+      this.$emit('bindCycleChange', options)
+    },
+
+    getTime () {
     }
+  },
+
+  onLoad () {
+    this.msg = ''
+    this.msg = this.post.msg
+    this.maxLength = this.post.maxLength ? this.post.maxLength : 140
+    this.placeholderMsg = this.post.placeholderMsg ? this.post.placeholderMsg : ''
+  },
+
+  onUnload () {
+    this.msg = ''
+    this.maxLength = 140
+    this.placeholderMsg = ''
   }
 }
 </script>
@@ -80,42 +105,17 @@ export default {
 .item_r {
   display: flex;
   align-items: center;
-  height: 100rpx;
-  margin-right: 30rpx;
-}
-.item_color {
-  width: 100rpx;
-  height: 60rpx;
-  border-radius: 10rpx;
+  justify-content: center;
+  width: 160rpx;
+  height: 40rpx;
+  font-size: 30rpx;
   margin-right: 10rpx;
 }
-.item_img {
-  width: 48rpx;
-  height: 48rpx;
+
+.item_r_img {
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 10rpx;
 }
 
-.color0 {
-  background-color: #FFCCCC;
-}
-.color1 {
-  background-color: #66CCCC;
-}
-.color2 {
-  background-color: #66CCFF;
-}
-.color3 {
-  background-color: #FF9966;
-}
-.color4 {
-  background-color: #99CCCC;
-}
-.color5 {
-  background-color: #99CCFF;
-}
-.color6 {
-  background-color: #CCCCFF;
-}
-.color7 {
-  background-color: #FFCC99;
-}
 </style>

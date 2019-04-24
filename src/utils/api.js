@@ -23,6 +23,16 @@ export default {
     // 小程序绑定
     xcxLogin (data) {
       const params = {
+        path: `/auth/authorize`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 账号密码登录
+    login (data) {
+      const params = {
         path: `/auth/login`,
         method: 'POST',
         data
@@ -40,7 +50,7 @@ export default {
       return request(params)
     },
 
-    // 更新用户资料
+    // 获取用户资料
     getCustomer (data) {
       const params = {
         path: `/auth/queryCustomDataById`,
@@ -48,8 +58,17 @@ export default {
         data
       }
       return request(params)
-    }
+    },
 
+    // 注册
+    register (data) {
+      const params = {
+        path: `/auth/register`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    }
   },
 
   // 账本
@@ -309,5 +328,70 @@ export default {
       return request(params)
     }
 
+  },
+
+  // 记账提醒
+  clock: {
+    // 添加
+    addClock (data) {
+      const params = {
+        path: `/clock/addClock`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    getClockById (data) {
+      const params = {
+        path: `/clock/queryClockById`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 修改
+    updateClock (data) {
+      const params = {
+        path: `/clock/updateClock`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 删除
+    deleteClock (data) {
+      const params = {
+        path: `/clock/deleteClock`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    },
+
+    // 展示所有
+    listClock (data) {
+      const params = {
+        path: `/clock/listClock`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    }
+  },
+
+  // 七牛云
+  picture: {
+    // 下载
+    downloadImg (data) {
+      const params = {
+        path: `/file/download`,
+        method: 'POST',
+        data
+      }
+      return request(params)
+    }
   }
 }

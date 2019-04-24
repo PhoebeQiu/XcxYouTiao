@@ -8,16 +8,20 @@
         <p class="item_name">{{post.title}}</p>
       </div>
 
-      <div class="item_r">
+      <div class="item_rr">
         <input :maxlength="maxLength"
           :placeholder="placeholderMsg"
           placeholder-style="color: #eee"
           class="input_textarea"
           @blur="blurFocus"
           name="name"
+          :password="showPassword"
           type="text"
           v-model="msg"/>
+        <!-- password="false" -->
       </div>
+
+      <image @click.stop="see" class="r_img" :src="[seeImg === 1 ? '../../static/images/ic_seeing.png' : '../../static/images/ic_see.png']" mode="aspectFill" />
     </div>
 
   </div>
@@ -36,16 +40,28 @@ export default {
     return {
       msg: '',
       maxLength: 140,
-      placeholderMsg: ''
+      placeholderMsg: '',
+      // 1看， 0没看
+      seeImg: 0,
+      // false看， true没看
+      showPassword: true
     }
   },
 
   methods: {
+    see () {
+      if (this.seeImg === 0) {
+        this.seeImg = 1
+        this.showPassword = false
+      } else if (this.seeImg === 1) {
+        this.seeImg = 0
+        this.showPassword = true
+      }
+    },
 
     blurFocus () {
-      if (!this.msg) {
-        this.msg = ''
-      }
+      this.showPassword = true
+      this.seeImg = 0
       let options = {
         type: this.post.type,
         msg: this.msg
@@ -55,7 +71,6 @@ export default {
   },
 
   onLoad () {
-    this.showImg = this.post.showImg
     this.msg = ''
     this.msg = this.post.msg
     this.maxLength = this.post.maxLength ? this.post.maxLength : 140

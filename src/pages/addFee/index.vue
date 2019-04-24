@@ -34,7 +34,7 @@
 
     <div class="btn">
       <div @click="addFee">
-        <WButton text="保存" size="big_btn" bgstyle="bgcolor_red" />
+        <WButton text="添加" size="big_btn" bgstyle="bgcolor_red" />
       </div>
     </div>
 

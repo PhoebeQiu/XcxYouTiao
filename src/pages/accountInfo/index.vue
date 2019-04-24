@@ -139,6 +139,25 @@ export default {
     },
 
     async deleteAcc () {
+      // 请求：账本数据
+      const data1 = {
+        pageNum: 1,
+        pageSize: 10
+      }
+      let res1 = await this.$api.accountBook.getAllAccount(data1)
+      if (res1.errCode) {
+        return
+      }
+      console.log('请求所有账本', res1.data.result)
+      let accountBookList = res1.data.result
+      if (accountBookList.length === 1) {
+        wx.showToast({
+          title: `默认账本不可删除！`,
+          icon: 'none'
+        })
+        return
+      }
+      // 请求：删除账本
       const data = {
         id: this.accountInfo.id
       }
